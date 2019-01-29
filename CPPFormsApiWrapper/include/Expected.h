@@ -8,7 +8,7 @@ namespace CPPFAPIWrapper {
    class Expected
    {
       public:
-		 CPPFAPIWRAPPER Expected(T * _r) : result(_r), gotResult(!_r) {
+		 CPPFAPIWRAPPER Expected(T * _r) : result(_r), gotResult(_r) {
             if( !gotResult )
                ex = FAPIException(Reason::OBJECT_NOT_FOUND, __FILE__, __LINE__, typeid(T).name());
          }
