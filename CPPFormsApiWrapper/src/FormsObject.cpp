@@ -115,10 +115,10 @@ namespace CPPFAPIWrapper {
    }
 
    Expected<FormsObject> FormsObject::getObject(const int _type_id, const string & _name) { TRACE_FNC(to_string(_type_id) + " | " + _name)
-      auto & objects = children[_type_id];
-      auto child = find_if(objects.begin(), objects.end(), [_name](const auto & child_) { return toUpper(child_->getName()) == toUpper(_name); });
+      auto & children_ = children[_type_id];
+      auto child = find_if(children_.begin(), children_.end(), [_name](const auto & child_) { return toUpper(child_->getName()) == toUpper(_name); });
 
-      return Expected<FormsObject>(child != objects.end() ? (*child).get() : nullptr);
+      return Expected<FormsObject>(child != children_.end() ? (*child).get() : nullptr);
    }
 
    vector<FormsObject *> FormsObject::getObjects(const int _type_id) { TRACE_FNC(to_string(_type_id))
@@ -187,7 +187,7 @@ namespace CPPFAPIWrapper {
          properties[_prop_num]->inherit();
    }
 
-   string FormsObject::getName()  { TRACE_FNC("")
+   string FormsObject::getName() {TRACE_FNC("")
       return properties[D2FP_NAME]->getValue();
    }
 

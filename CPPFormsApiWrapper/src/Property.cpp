@@ -164,4 +164,8 @@ namespace CPPFAPIWrapper {
       original_value = value;
       dirty = false;
    }
+
+   string Property::getValue() const { TRACE_FNC("")
+		return value;
+	}
 }

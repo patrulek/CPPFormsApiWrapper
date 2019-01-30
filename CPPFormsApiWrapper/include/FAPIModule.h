@@ -64,6 +64,13 @@ namespace CPPFAPIWrapper {
          */
 		 CPPFAPIWRAPPER void attachLib(const std::string & _lib_name);
 
+
+		 /** Detach PLSQL library to a module
+		 *
+		 * \param _lib_name Library name
+		 */
+		 CPPFAPIWRAPPER void detachLib(const std::string & _lib_name);
+
          /** Saves .fmb module to a disk.
          *
          * \param _path If not provided, module will be saved to a location pointed by filepath object member

@@ -37,7 +37,7 @@ namespace CPPFAPIWrapper {
          *
          * \return Property value
          */
-		 CPPFAPIWRAPPER std::string getValue() const { return value; }
+		 CPPFAPIWRAPPER std::string getValue() const;
 
          /** Sets current property value, updating its state and marking to set OracleForms internal value
          *

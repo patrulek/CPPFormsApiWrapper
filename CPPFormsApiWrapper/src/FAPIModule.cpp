@@ -163,11 +163,40 @@ namespace CPPFAPIWrapper {
    }
 
    void FAPIModule::attachLib(const string & _lib_name) { TRACE_FNC(_lib_name)
+	   if (hasObject(D2FFO_ATT_LIB, _lib_name)) {
+		   FAPILogger::warn("Form already attach " + _lib_name);
+		   return;
+	   }
+
       d2falb *ppd2falb = nullptr;
       int status = d2falbat_Attach(ctx->getContext(), mod.get(), &ppd2falb, FALSE, stringToText(_lib_name));
 
       if( status != D2FS_SUCCESS )
          throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, _lib_name, status);
+
+	  FormsObject * lib = new FormsObject(this, D2FFO_ATT_LIB, ppd2falb, 1);
+	  root->addChild(lib);
+   }
+
+   void FAPIModule::detachLib(const std::string & _lib_name) { TRACE_FNC(_lib_name)
+	   Expected<FormsObject> exp_lib = root->getObject(D2FFO_ATT_LIB, _lib_name);
+		bool detached = false;
+
+	   while ( exp_lib.isValid() ) {
+		   if (detached) {
+			   FAPILogger::warn("There are more instances of " + _lib_name + " attached to form! Form needs to be saved before detaching another again");
+			   saveModule();
+		   }
+
+			int status = d2falbdt_Detach(ctx->getContext(), exp_lib->getFormsObj());
+
+			if (status != D2FS_SUCCESS)
+				throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, _lib_name, status);
+
+			detached = true;
+			root->removeChild(exp_lib.get());
+			exp_lib = root->getObject(D2FFO_ATT_LIB, _lib_name);
+	   }
    }
 
    void FAPIModule::saveModule(const string & _path) { TRACE_FNC(_path)

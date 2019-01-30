@@ -36,6 +36,6 @@ namespace CPPFAPIWrapper {
    };
 }
 
-#define TRACE_FNC(_msg) FAPILogger::trace(string(__FILE__) + " (" + to_string(__LINE__) + "): " + _msg);
+#define TRACE_FNC(_msg) FAPILogger::trace(string(__FILE__).substr(string(__FILE__).rfind('\\')) + " (" + string(__FUNCTION__) + " " + to_string(__LINE__) + "): " + _msg);
 
 #endif // FAPILOGGER_H
