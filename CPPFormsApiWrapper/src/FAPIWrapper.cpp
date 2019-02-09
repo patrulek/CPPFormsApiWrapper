@@ -19,9 +19,10 @@ namespace CPPFAPIWrapper {
 
    unique_ptr<FAPIContext> createContext(const string & _connstring) { TRACE_FNC(_connstring)
       auto ctx = make_unique<FAPIContext>();
+      ctx->connectContextToDB(_connstring);
 
-      if( _connstring != "" )
-         ctx->connectContextToDB(_connstring);
+	  if (builtins.empty())
+		  builtins = ctx->getBuiltins();
 
       return ctx;
    }
@@ -60,6 +61,8 @@ namespace CPPFAPIWrapper {
             || _prop_num == D2FP_PAR_NAM || _prop_num == D2FP_PAR_SL1OBJ_NAM || _prop_num == D2FP_PAR_SL1OBJ_TYP
             || _prop_num == D2FP_PAR_SL2OBJ_NAM || _prop_num == D2FP_PAR_SL2OBJ_TYP || _prop_num == D2FP_PAR_TYP;
    }
+
+   unordered_map<string, vector<string>> builtins = {};
 
    // TODO
    unordered_map<int, vector<int>> type_hierarchy = {

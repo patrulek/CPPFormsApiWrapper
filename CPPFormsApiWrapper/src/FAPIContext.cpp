@@ -25,6 +25,32 @@ namespace CPPFAPIWrapper {
       ctx = unique_ptr<d2fctx, function<void(d2fctx *)>>(ctx_, deleter);
    }
 
+   unordered_map<string, vector<string>> FAPIContext::getBuiltins() {
+	   unordered_map<string, vector<string>> builtins;
+	   text *** arr = nullptr;
+	   int status = d2fctxbi_BuiltIns(ctx.get(), &arr);
+
+	   if (status != D2FS_SUCCESS)
+		   throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status);
+
+	   while (*arr) {
+		   text ** list = *arr;
+
+		   vector<string> units;
+		   string package_name = string{ reinterpret_cast<char *>(*list) };
+
+		   while (*(++list)) {
+			   string unit_name = string{ reinterpret_cast<char *>(*list) };
+			   units.emplace_back(unit_name);
+		   }
+
+		   builtins[package_name] = units;
+		   ++arr;
+	   }
+
+	   return builtins;
+   }
+
    void FAPIContext::loadSourceModules(const FAPIModule * _module, const bool _ignore_missing_libs, const bool _ignore_missing_sub) { TRACE_FNC(to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
       unordered_set<string> to_process(_module->getSourceModules());
       unordered_set<string> processed(_module->getSourceModules());
@@ -118,6 +144,11 @@ namespace CPPFAPIWrapper {
    }
 
    bool FAPIContext::connectContextToDB(const string & _connstring) { TRACE_FNC(_connstring)
+	   if (_connstring.empty()) {
+		   FAPILogger::warn("Need to provide database connection string!");
+		   return is_connected;
+	   }
+
       if( !is_connected ) {
          int status = d2fctxcn_Connect(ctx.get(), stringToText(_connstring), nullptr);
 

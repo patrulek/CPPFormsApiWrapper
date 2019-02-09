@@ -19,6 +19,12 @@ namespace CPPFAPIWrapper {
          /** Creates FAPIContext object */
 		  CPPFAPIWRAPPER FAPIContext();
 
+		  /** Gets Oracle Forms built-ins program units
+		  *
+		  * \return Builtins program units sorted by package names
+		  */
+		  CPPFAPIWRAPPER std::unordered_map<std::string, std::vector<std::string>> getBuiltins();
+
          /** Loads OracleForms module and binds it with current context. Throws an exception when there
          * are missing libs (.pll) or cant resolve inheritance and ignore parameters are set to false.
          * Important: this function will not load parent modules, which loaded module inherits objects from.

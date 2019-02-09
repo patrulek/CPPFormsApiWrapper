@@ -11,6 +11,9 @@
 namespace CPPFAPIWrapper {
    class FAPIContext;
 
+   /// OracleForms built-ins program units
+   CPPFAPIWRAPPER extern std::unordered_map<std::string, std::vector<std::string>> builtins;
+
    /// OracleForms type hierarchy
    CPPFAPIWRAPPER extern std::unordered_map<int, std::vector<int>> type_hierarchy;
 
