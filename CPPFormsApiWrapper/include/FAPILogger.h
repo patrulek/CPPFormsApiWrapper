@@ -28,6 +28,8 @@ namespace CPPFAPIWrapper {
 		 CPPFAPIWRAPPER static bool isEnabled();
 		 CPPFAPIWRAPPER static easylogger::LogLevel getLogLevel();
       private:
+		  CPPFAPIWRAPPER static std::string getTimestamp();
+
          static std::string filepath;
          static std::ofstream stream;
          static bool is_enabled;
@@ -36,6 +38,6 @@ namespace CPPFAPIWrapper {
    };
 }
 
-#define TRACE_FNC(_msg) FAPILogger::trace(string(__FILE__).substr(string(__FILE__).rfind('\\')) + " (" + string(__FUNCTION__) + " " + to_string(__LINE__) + "): " + _msg);
+#define TRACE_FNC(_msg) FAPILogger::trace(std::string(__FILE__).substr(std::string(__FILE__).rfind('\\')) + " (" + std::string(__FUNCTION__) + " " + std::to_string(__LINE__) + "): " + _msg);
 
 #endif // FAPILOGGER_H

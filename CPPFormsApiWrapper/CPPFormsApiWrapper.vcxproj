@@ -98,6 +98,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;CPPFORMSAPI_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,6 +121,7 @@
       <PreprocessorDefinitions>_DEBUG;CPPFORMSAPI_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,6 +148,7 @@
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <CallingConvention>Cdecl</CallingConvention>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,6 +175,7 @@
       <PreprocessorDefinitions>NDEBUG;CPPFORMSAPI_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -188,7 +192,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="dllmain.h" />
     <ClInclude Include="include\D2FALB.H" />
     <ClInclude Include="include\D2FALT.H" />
     <ClInclude Include="include\D2FBLK.H" />
@@ -235,6 +238,16 @@
     <ClInclude Include="include\D2FTXS.H" />
     <ClInclude Include="include\D2FVAT.H" />
     <ClInclude Include="include\D2FWIN.H" />
+    <ClInclude Include="include\date\chrono_io.h" />
+    <ClInclude Include="include\date\date.h" />
+    <ClInclude Include="include\date\ios.h" />
+    <ClInclude Include="include\date\islamic.h" />
+    <ClInclude Include="include\date\iso_week.h" />
+    <ClInclude Include="include\date\julian.h" />
+    <ClInclude Include="include\date\ptz.h" />
+    <ClInclude Include="include\date\tz.h" />
+    <ClInclude Include="include\date\tz_private.h" />
+    <ClInclude Include="include\dllmain.h" />
     <ClInclude Include="include\easylogger-impl.h" />
     <ClInclude Include="include\easylogger.h" />
     <ClInclude Include="include\Exceptions.h" />
@@ -257,6 +270,10 @@
     <ClCompile Include="src\FAPIWrapper.cpp" />
     <ClCompile Include="src\FormsObject.cpp" />
     <ClCompile Include="src\Property.cpp" />
+    <ClCompile Include="src\src\tz.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\src\ios.mm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

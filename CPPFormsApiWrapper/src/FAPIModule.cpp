@@ -103,7 +103,7 @@ namespace CPPFAPIWrapper {
          marked_objects.erase(idx);
    }
 
-   bool FAPIModule::hasInternalObject(const int _type_id, const std::string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
+   bool FAPIModule::hasInternalObject(const int _type_id, const string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
 		auto splits = splitString(_fullname, ".");
 		d2fob * obj = nullptr;
 		unordered_map<d2fob *, vector<d2fob *>> objects{ {mod.get(), {}} };
@@ -153,7 +153,7 @@ namespace CPPFAPIWrapper {
 
 	   auto triggers = getTriggers();
 	   auto prog_units = getProgramUnits();
-	   regex pattern("global.[A-Za-z0-9_!@#$%^&*()]+", std::regex_constants::icase);
+	   regex pattern("global.[A-Za-z0-9_!@#$%^&*()]+", regex_constants::icase);
 	   smatch match;
 
 	   for (auto & trg : triggers) {
@@ -173,7 +173,7 @@ namespace CPPFAPIWrapper {
 	   }
    }
 
-   std::string FAPIModule::getFilepath() const { TRACE_FNC("")
+   string FAPIModule::getFilepath() const { TRACE_FNC("")
 	   return filepath;
    }
 
@@ -252,7 +252,7 @@ namespace CPPFAPIWrapper {
 	  root->addChild(lib);
    }
 
-   void FAPIModule::detachLib(const std::string & _lib_name) { TRACE_FNC(_lib_name)
+   void FAPIModule::detachLib(const string & _lib_name) { TRACE_FNC(_lib_name)
 	   Expected<FormsObject> exp_lib = root->getObject(D2FFO_ATT_LIB, _lib_name);
 		bool detached = false;
 
@@ -484,7 +484,7 @@ namespace CPPFAPIWrapper {
 	   return root->getName(); 
    }
 
-   std::unordered_set<std::string> FAPIModule::getSourceModules() const { TRACE_FNC("")
+   unordered_set<string> FAPIModule::getSourceModules() const { TRACE_FNC("")
 	   return source_modules;
    }
 }

@@ -1,5 +1,11 @@
 #include "FAPILogger.h"
 #include "easylogger-impl.h"
+#include "date\date.h"
+
+#include <chrono>
+#include <ctime>
+
+using namespace std::chrono;
 
 namespace CPPFAPIWrapper {
    std::string FAPILogger::filepath = "c:/temp/cppfapilog.txt";
@@ -8,9 +14,13 @@ namespace CPPFAPIWrapper {
    easylogger::LogLevel FAPILogger::level = easylogger::LEVEL_WARNING;
    easylogger::Logger FAPILogger::logger = easylogger::Logger("CPPFapiLogger");
 
+   std::string FAPILogger::getTimestamp() {
+	   return date::format("[%F %T] ", time_point_cast<milliseconds>(system_clock::now()));
+   }
+
    void FAPILogger::trace(std::string _str) {
       if( is_enabled ) {
-         LOG_TRACE(logger, _str);
+         LOG_TRACE(logger, getTimestamp() + _str);
          flush();
       }
    }
@@ -29,35 +39,35 @@ namespace CPPFAPIWrapper {
 
    void FAPILogger::debug(std::string _str) {
       if( is_enabled ) {
-         LOG_DEBUG(logger, _str);
+         LOG_DEBUG(logger, getTimestamp() + _str);
          flush();
       }
    }
 
    void FAPILogger::info(std::string _str) {
       if( is_enabled ) {
-         LOG_INFO(logger, _str);
+         LOG_INFO(logger, getTimestamp() + _str);
          flush();
       }
    }
 
    void FAPILogger::warn(std::string _str) {
       if( is_enabled ) {
-         LOG_WARNING(logger, _str);
+         LOG_WARNING(logger, getTimestamp() + _str);
          flush();
       }
    }
 
    void FAPILogger::error(std::string _str) {
       if( is_enabled ) {
-         LOG_ERROR(logger, _str);
+         LOG_ERROR(logger, getTimestamp() + _str);
          flush();
       }
    }
 
    void FAPILogger::fatal(std::string _str) {
       if( is_enabled ) {
-         LOG_FATAL(logger, _str);
+         LOG_FATAL(logger, getTimestamp() + _str);
          flush();
       }
    }

@@ -131,7 +131,7 @@ namespace CPPFAPIWrapper {
       return objects;
    }
 
-   CPPFAPIWRAPPER FormsObject * FormsObject::getParent() const { TRACE_FNC("")
+   FormsObject * FormsObject::getParent() const { TRACE_FNC("")
 	   return parent;
    }
 
@@ -177,7 +177,7 @@ namespace CPPFAPIWrapper {
          entry.second->inherit();
    }
 
-   void FormsObject::inheritProps(const std::vector<int> & _prop_nums) { TRACE_FNC("")
+   void FormsObject::inheritProps(const vector<int> & _prop_nums) { TRACE_FNC("")
       for( auto prop_num : _prop_nums )
          inheritProp(prop_num);
    }
@@ -195,34 +195,34 @@ namespace CPPFAPIWrapper {
       return properties[D2FP_NAME]->getValue();
    }
 
-   CPPFAPIWRAPPER std::unordered_map<int, std::vector<std::unique_ptr<FormsObject>>>& FormsObject::getChildren() { TRACE_FNC("")
+   unordered_map<int, vector<unique_ptr<FormsObject>>>& FormsObject::getChildren() { TRACE_FNC("")
 	   return children;
    }
 
-   CPPFAPIWRAPPER std::unordered_map<int, std::unique_ptr<Property>>& FormsObject::getProperties() { TRACE_FNC("")
+   unordered_map<int, unique_ptr<Property>>& FormsObject::getProperties() { TRACE_FNC("")
 	   return properties;
    }
 
-   CPPFAPIWRAPPER std::vector<Property*>& FormsObject::getMarkedProperties() { TRACE_FNC("")
+   vector<Property*>& FormsObject::getMarkedProperties() { TRACE_FNC("")
 	   return marked_properties;
    }
 
-   CPPFAPIWRAPPER int FormsObject::getLevel() const { TRACE_FNC("")
+   int FormsObject::getLevel() const { TRACE_FNC("")
 	   return level;
    }
 
-   CPPFAPIWRAPPER int FormsObject::getId() const { TRACE_FNC("")
+   int FormsObject::getId() const { TRACE_FNC("")
 	   return type_id;
    }
 
-   CPPFAPIWRAPPER d2fob * FormsObject::getFormsObj() const { TRACE_FNC("")
+   d2fob * FormsObject::getFormsObj() const { TRACE_FNC("")
 	   return forms_obj;
    }
 
    FAPIContext * FormsObject::getContext() const { TRACE_FNC("")
       return module->getContext();
    }
-   CPPFAPIWRAPPER FAPIModule * FormsObject::getModule() const { TRACE_FNC("")
+   FAPIModule * FormsObject::getModule() const { TRACE_FNC("")
 	   return module;
    }
 }

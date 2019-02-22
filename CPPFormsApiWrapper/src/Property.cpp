@@ -163,23 +163,23 @@ namespace CPPFAPIWrapper {
       parent->markProperty(this);
    }
 
-   CPPFAPIWRAPPER PropState Property::getOriginalState() const { TRACE_FNC("")
+   PropState Property::getOriginalState() const { TRACE_FNC("")
 	   return original_state;
    }
 
-   CPPFAPIWRAPPER PropState Property::getState() const { TRACE_FNC("")
+   PropState Property::getState() const { TRACE_FNC("")
 	   return state;
    }
 
-   CPPFAPIWRAPPER int Property::getId() const { TRACE_FNC("")
+   int Property::getId() const { TRACE_FNC("")
 	   return prop_id;
    }
 
-   CPPFAPIWRAPPER int Property::getType() const { TRACE_FNC("")
+   int Property::getType() const { TRACE_FNC("")
 	   return prop_type;
    }
 
-   CPPFAPIWRAPPER bool Property::isDirty() const { TRACE_FNC("")
+   bool Property::isDirty() const { TRACE_FNC("")
 	   return dirty;
    }
 
