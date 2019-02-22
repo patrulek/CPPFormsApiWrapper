@@ -26,12 +26,12 @@ namespace CPPFAPIWrapper {
          CPPFAPIWRAPPER FAPIModule(FAPIContext * _ctx, d2ffmd * _mod, const std::string & _filepath);
 		 CPPFAPIWRAPPER ~FAPIModule();
 
-		 CPPFAPIWRAPPER FAPIModule() = delete;
-		 CPPFAPIWRAPPER FAPIModule(const FAPIModule & _module) = delete;
-		 CPPFAPIWRAPPER FAPIModule(FAPIModule && _module) = delete;
+		 FAPIModule() = delete;
+		 FAPIModule(const FAPIModule & _module) = delete;
+		 FAPIModule(FAPIModule && _module) = delete;
 
-		 CPPFAPIWRAPPER FAPIModule & operator=(const FAPIModule & _module) = delete;
-		 CPPFAPIWRAPPER FAPIModule & operator=(FAPIModule && _module) = delete;
+		 FAPIModule & operator=(const FAPIModule & _module) = delete;
+		 FAPIModule & operator=(FAPIModule && _module) = delete;
 
          /** Inherits all properties from source modules */
 		 CPPFAPIWRAPPER void inheritAllProp();
@@ -206,31 +206,31 @@ namespace CPPFAPIWrapper {
          *
          * \return FAPIContext pointer.
          */
-         FAPIContext * getContext() const { return ctx; }
+         CPPFAPIWRAPPER FAPIContext * getContext() const { return ctx; }
 
          /** Gets pointer to OracleForms object
          *
          * \return Pointer to OracleForms object
          */
-         d2ffmd * getModule() const { return mod.get(); }
+		 CPPFAPIWRAPPER d2ffmd * getModule() const { return mod.get(); }
 
          /** Gets root object of module
          *
          * \return Pointer to FormsObject root object.
          */
-         FormsObject * getRoot() const { return root.get(); }
+		 CPPFAPIWRAPPER FormsObject * getRoot() const { return root.get(); }
 
          /** Gets name of a module
          *
          * \return Name of module.
          */
-         std::string getName() const;
+		 CPPFAPIWRAPPER std::string getName() const;
 
          /** Gets names of source modules, which current module inherits from
          *
          * \return Set of source module names.
          */
-         std::unordered_set<std::string> getSourceModules() const { return source_modules; }
+		 CPPFAPIWRAPPER std::unordered_set<std::string> getSourceModules() const { return source_modules; }
       private:
          FAPIContext * ctx;
          std::string filepath;
