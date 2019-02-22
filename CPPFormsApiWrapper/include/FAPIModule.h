@@ -64,7 +64,6 @@ namespace CPPFAPIWrapper {
          */
 		 CPPFAPIWRAPPER void attachLib(const std::string & _lib_name);
 
-
 		 /** Detach PLSQL library to a module
 		 *
 		 * \param _lib_name Library name
@@ -107,11 +106,18 @@ namespace CPPFAPIWrapper {
          */
 		 CPPFAPIWRAPPER void unmarkObject(FormsObject * _forms_object);
 
+		 /** Checks if contains internal object
+		 * \param _type_id OracleForms object type id
+		 * \param _fullname Full name of object (eg. BLOCK.ITEM.TRIGGER, PRG_UNIT ...)
+		 * \return True if module contains internal object, false otherwise
+		 */
+		 CPPFAPIWRAPPER bool hasInternalObject(const int _type_id, const std::string & _fullname) const;
+
          /** Checks if contains a given object.
          *
          * \param _type_id OracleForms object type id
          * \param _name Name of object
-         * \return True if module has object, else otherwise.
+         * \return True if module has object, false otherwise.
          */
 		 CPPFAPIWRAPPER bool hasObject(const int _type_id, const std::string & _name) const;
 
@@ -187,6 +193,9 @@ namespace CPPFAPIWrapper {
          */
 		 CPPFAPIWRAPPER std::vector<FormsObject *> getParameters() const;
 
+		 /** Finds all global variables from all triggers and program units */
+		 CPPFAPIWRAPPER void findGlobals();
+
          /** Gets filepath to module
          *
          * \return Filepath to module
@@ -229,6 +238,7 @@ namespace CPPFAPIWrapper {
          std::unique_ptr<FormsObject> root;
          std::vector<FormsObject *> marked_objects;
          std::unordered_set<std::string> source_modules;
+		 std::unordered_set<std::string> globals;
    };
 }
 #endif // FAPIMODULE_H

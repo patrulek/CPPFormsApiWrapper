@@ -103,6 +103,76 @@ namespace CPPFAPIWrapper {
          marked_objects.erase(idx);
    }
 
+   bool FAPIModule::hasInternalObject(const int _type_id, const std::string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
+		auto splits = splitString(_fullname, ".");
+		d2fob * obj = nullptr;
+		unordered_map<d2fob *, vector<d2fob *>> objects{ {mod.get(), {}} };
+
+		for (auto & split : splits) {
+			FAPILogger::debug(split);
+
+			for (auto & objects_ : objects) {
+				if (!objects[objects_.first].empty())
+					continue;
+
+				for (auto & type : type_hierarchy) {
+					obj = nullptr;
+					int status = d2fobfo_FindObj(getContext()->getContext(), objects_.first, stringToText(split), type.first, &obj);
+
+					if (status != D2FS_SUCCESS && status != D2FS_OBJNOTFOUND)
+						throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status);
+
+					if (obj) {
+						objects_.second.push_back(obj);
+						objects[obj] = {};
+					}
+				}
+			}
+		}
+
+		obj = nullptr;
+
+		for (auto & objects_ : objects) {
+			if (!objects_.second.empty())
+				continue;
+
+			d2fotyp v_obj_typ;
+			d2fobqt_QueryType(getContext()->getContext(), objects_.first, &v_obj_typ);
+			
+			if (v_obj_typ == _type_id) {
+				obj = objects_.first;
+				break;
+			}
+		}
+
+		return obj;
+   }
+
+   void FAPIModule::findGlobals() {
+	   globals.clear();
+
+	   auto triggers = getTriggers();
+	   auto prog_units = getProgramUnits();
+	   regex pattern("global.[A-Za-z0-9_!@#$%^&*()]+", std::regex_constants::icase);
+	   smatch match;
+
+	   for (auto & trg : triggers) {
+		   string code = trg->getProperties().at(D2FP_TRG_TXT)->getValue(); 
+		   regex_search(code, match, pattern);
+
+		   for (auto val : match)
+			   globals.insert(val.str().substr(7)); // 7 = `global.` offset
+	   }
+
+	   for (auto & pgu : prog_units) {
+		   string code = pgu->getProperties().at(D2FP_PGU_TXT)->getValue();
+		   regex_search(code, match, pattern);
+
+		   for (auto val : match)
+			   globals.insert(val.str().substr(7)); // 7 = `global.` offset
+	   }
+   }
+
    void FAPIModule::inheritAllProp() { TRACE_FNC("")
       for( auto obj : getAllObjects() )
          obj->inheritAllProp();
@@ -319,6 +389,7 @@ namespace CPPFAPIWrapper {
       */
       for ( int prop_num = D2FP_MIN + 1; prop_num < D2FP_MAX + 1; ++prop_num ) {
          text * v_prop_name = nullptr;
+
          /*
          ** If the object doesn't have this property, or we can't get
          ** the name of the property, or if the property has no name,

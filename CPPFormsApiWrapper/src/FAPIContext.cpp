@@ -51,7 +51,7 @@ namespace CPPFAPIWrapper {
 	   return builtins;
    }
 
-   void FAPIContext::loadSourceModules(const FAPIModule * _module, const bool _ignore_missing_libs, const bool _ignore_missing_sub) { TRACE_FNC(to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
+   void FAPIContext::loadSourceModules(const FAPIModule * _module, const bool _ignore_missing_libs, const bool _ignore_missing_sub, const bool _traverse) { TRACE_FNC(to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
       unordered_set<string> to_process(_module->getSourceModules());
       unordered_set<string> processed(_module->getSourceModules());
       processed.insert(_module->getName());
@@ -87,14 +87,14 @@ namespace CPPFAPIWrapper {
       }
    }
 
-   void FAPIContext::loadModuleWithSources(const string & _filepath, const bool _ignore_missing_libs, const bool _ignore_missing_sub) { TRACE_FNC(_filepath + " | " + to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
+   void FAPIContext::loadModuleWithSources(const string & _filepath, const bool _ignore_missing_libs, const bool _ignore_missing_sub, const bool _traverse) { TRACE_FNC(_filepath + " | " + to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
       loadModule(_filepath, _ignore_missing_libs, _ignore_missing_sub);
       auto module = getModule(_filepath);
       loadSourceModules(module, _ignore_missing_libs, _ignore_missing_sub);
       module->checkOverriden();
    }
 
-   void FAPIContext::loadModule(const string & _filepath, const bool _ignore_missing_libs, const bool _ignore_missing_sub) { TRACE_FNC(_filepath + " | " + to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
+   void FAPIContext::loadModule(const string & _filepath, const bool _ignore_missing_libs, const bool _ignore_missing_sub, const bool _traverse) { TRACE_FNC(_filepath + " | " + to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
       if( hasModule(_filepath) )
          throw FAPIException(Reason::OTHER, __FILE__, __LINE__, _filepath);
 
@@ -110,10 +110,13 @@ namespace CPPFAPIWrapper {
          throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, _filepath, status); // "operation failed", when trying to load, already loaded, module
 
       auto module = make_unique<FAPIModule>(this, mod, _filepath);
-      status = module->traverseObjects();
 
-      if( status != D2FS_SUCCESS )
-         throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status);
+	  if (_traverse) {
+		  status = module->traverseObjects();
+
+		  if (status != D2FS_SUCCESS)
+			  throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status);
+	  }
 
       modules[toUpper(_filepath)] = move(module);
    }

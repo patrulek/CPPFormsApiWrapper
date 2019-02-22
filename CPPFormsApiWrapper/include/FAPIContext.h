@@ -34,7 +34,7 @@ namespace CPPFAPIWrapper {
          * \param _ignore_missing_libs If True, module will be loaded regardless of missing PLSQL libraries (.pll)
          * \param _ignore_missing_sub If True, module will be loaded regardless of missing subobjects
          */
-         CPPFAPIWRAPPER void loadModule(const std::string & _filepath, const bool _ignore_missing_libs = false, const bool _ignore_missing_sub = false);
+         CPPFAPIWRAPPER void loadModule(const std::string & _filepath, const bool _ignore_missing_libs = false, const bool _ignore_missing_sub = false, const bool _traverse = true);
 
          /** Recurrently loads all sources for given module.
          *
@@ -42,7 +42,7 @@ namespace CPPFAPIWrapper {
          * \param _ignore_missing_libs If True, all modules will be loaded regardless of missing PLSQL libraries (.pll)
          * \param _ignore_missing_sub If True, all modules will be loaded regardless of missing subobjects
          */
-		 CPPFAPIWRAPPER void loadSourceModules(const FAPIModule * _module, const bool _ignore_missing_libs = false, const bool _ignore_missing_sub = false);
+		 CPPFAPIWRAPPER void loadSourceModules(const FAPIModule * _module, const bool _ignore_missing_libs = false, const bool _ignore_missing_sub = false, const bool _traverse = true);
 
          /** Combination of functions: loadModule and loadSourceModules. After loading all modules
          * properties will be checked for broken inheritance of a module pointed by _filepath param.
@@ -51,7 +51,7 @@ namespace CPPFAPIWrapper {
          * \param _ignore_missing_libs If True, all modules will be loaded regardless of missing PLSQL libraries (.pll)
          * \param _ignore_missing_sub If True, all modules will be loaded regardless of missing subobjects
          */
-		 CPPFAPIWRAPPER void loadModuleWithSources(const std::string & _filepath, const bool _ignore_missing_libs = false, const bool _ignore_missing_sub = false);
+		 CPPFAPIWRAPPER void loadModuleWithSources(const std::string & _filepath, const bool _ignore_missing_libs = false, const bool _ignore_missing_sub = false, const bool _traverse = true);
 
          /** Creates new FAPIModule object in location pointed by _filepath param. The file is not generated
          * althought, until saveModule function wont be called.
