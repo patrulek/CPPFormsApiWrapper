@@ -24,9 +24,9 @@ namespace CPPFAPIWrapper {
 		 CPPFAPIWRAPPER static void debug(std::string _str);
 		 CPPFAPIWRAPPER static void trace(std::string _str);
 
-		 CPPFAPIWRAPPER static std::string getFilepath() { return filepath; }
-		 CPPFAPIWRAPPER static bool isEnabled() { return is_enabled; }
-		 CPPFAPIWRAPPER static easylogger::LogLevel getLogLevel() { return level; }
+		 CPPFAPIWRAPPER static std::string getFilepath();
+		 CPPFAPIWRAPPER static bool isEnabled();
+		 CPPFAPIWRAPPER static easylogger::LogLevel getLogLevel();
       private:
          static std::string filepath;
          static std::ofstream stream;

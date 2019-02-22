@@ -25,7 +25,7 @@ namespace CPPFAPIWrapper {
       ctx = unique_ptr<d2fctx, function<void(d2fctx *)>>(ctx_, deleter);
    }
 
-   unordered_map<string, vector<string>> FAPIContext::getBuiltins() {
+   unordered_map<string, vector<string>> FAPIContext::getBuiltins() { TRACE_FNC("")
 	   unordered_map<string, vector<string>> builtins;
 	   text *** arr = nullptr;
 	   int status = d2fctxbi_BuiltIns(ctx.get(), &arr);
@@ -177,5 +177,21 @@ namespace CPPFAPIWrapper {
       }
 
       return is_connected;
+   }
+   
+   bool FAPIContext::isConnected() const { TRACE_FNC("")
+	   return is_connected;
+   }
+   
+   d2fctx * FAPIContext::getContext() const { TRACE_FNC("")
+	   return ctx.get();
+   }
+
+   unordered_map<string, unique_ptr<FAPIModule>>& FAPIContext::getModules() { TRACE_FNC("")
+		return modules;
+   }
+
+   string FAPIContext::getConnstring() const { TRACE_FNC("")
+		return connstring;
    }
 }

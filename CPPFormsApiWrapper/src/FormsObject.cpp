@@ -131,6 +131,10 @@ namespace CPPFAPIWrapper {
       return objects;
    }
 
+   CPPFAPIWRAPPER FormsObject * FormsObject::getParent() const { TRACE_FNC("")
+	   return parent;
+   }
+
    void FormsObject::markProperty(Property * _property) { TRACE_FNC("")
       if( find(marked_properties.begin(), marked_properties.end(), _property) == marked_properties.end() ) {
          marked_properties.emplace_back(_property);
@@ -191,7 +195,34 @@ namespace CPPFAPIWrapper {
       return properties[D2FP_NAME]->getValue();
    }
 
+   CPPFAPIWRAPPER std::unordered_map<int, std::vector<std::unique_ptr<FormsObject>>>& FormsObject::getChildren() { TRACE_FNC("")
+	   return children;
+   }
+
+   CPPFAPIWRAPPER std::unordered_map<int, std::unique_ptr<Property>>& FormsObject::getProperties() { TRACE_FNC("")
+	   return properties;
+   }
+
+   CPPFAPIWRAPPER std::vector<Property*>& FormsObject::getMarkedProperties() { TRACE_FNC("")
+	   return marked_properties;
+   }
+
+   CPPFAPIWRAPPER int FormsObject::getLevel() const { TRACE_FNC("")
+	   return level;
+   }
+
+   CPPFAPIWRAPPER int FormsObject::getId() const { TRACE_FNC("")
+	   return type_id;
+   }
+
+   CPPFAPIWRAPPER d2fob * FormsObject::getFormsObj() const { TRACE_FNC("")
+	   return forms_obj;
+   }
+
    FAPIContext * FormsObject::getContext() const { TRACE_FNC("")
       return module->getContext();
+   }
+   CPPFAPIWRAPPER FAPIModule * FormsObject::getModule() const { TRACE_FNC("")
+	   return module;
    }
 }

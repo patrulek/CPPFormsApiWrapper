@@ -97,25 +97,25 @@ namespace CPPFAPIWrapper {
          *
          * /return Status of connection.
          */
-		 CPPFAPIWRAPPER bool isConnected() const { return is_connected; }
+		 CPPFAPIWRAPPER bool isConnected() const;
 
          /** Gets pointer to OracleForms context object
          *
          * \return Pointer to OracleForms context object
          */
-		 CPPFAPIWRAPPER d2fctx * getContext() const { return ctx.get(); }
+		 CPPFAPIWRAPPER d2fctx * getContext() const;
 
          /** Gets referenced map of context's modules
          *
          * \return Map of modules, where key is path to .fmb file.
          */
-		 CPPFAPIWRAPPER std::unordered_map<std::string, std::unique_ptr<FAPIModule>> & getModules() { return modules; }
+		 CPPFAPIWRAPPER std::unordered_map<std::string, std::unique_ptr<FAPIModule>> & getModules();
 
          /** Gets string which were used for connecting to database
          *
          * \return Connection string which were used for connecting to database
          */
-		 CPPFAPIWRAPPER std::string getConnstring() const { return connstring; }
+		 CPPFAPIWRAPPER std::string getConnstring() const;
       private:
          std::unique_ptr<d2fctx, std::function<void(d2fctx *)>> ctx;
          std::unordered_map<std::string, std::unique_ptr<FAPIModule>> modules;

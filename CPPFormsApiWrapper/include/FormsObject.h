@@ -132,25 +132,25 @@ namespace CPPFAPIWrapper {
          *
          * \return Pointer to FormsObject
          */
-		 CPPFAPIWRAPPER FormsObject * getParent() const { return parent; }
+		 CPPFAPIWRAPPER FormsObject * getParent() const;
 
          /** Gets hierarchy level
          *
          * \return Hierarchy level of an object
          */
-		 CPPFAPIWRAPPER int getLevel() const { return level; }
+		 CPPFAPIWRAPPER int getLevel() const;
 
          /** Gets object's type id
          *
          * \return OracleForms object's type id
          */
-		 CPPFAPIWRAPPER int getId() const { return type_id; }
+		 CPPFAPIWRAPPER int getId() const;
 
          /** Gets OracleForms object pointer
          *
          * \return OracleForms object pointer
          */
-		 CPPFAPIWRAPPER d2fob * getFormsObj() const { return forms_obj; }
+		 CPPFAPIWRAPPER d2fob * getFormsObj() const;
 
          /** Gets FAPIContext which module is assigned to.
          *
@@ -162,7 +162,7 @@ namespace CPPFAPIWrapper {
          *
          * \return FAPIModule pointer
          */
-		 CPPFAPIWRAPPER FAPIModule * getModule() const { return module; }
+		 CPPFAPIWRAPPER FAPIModule * getModule() const;
 
          /** Gets name of an object
          *
@@ -174,19 +174,19 @@ namespace CPPFAPIWrapper {
          *
          * \return Map of children
          */
-		 CPPFAPIWRAPPER std::unordered_map<int, std::vector<std::unique_ptr<FormsObject>>> & getChildren() { return children; }
+		 CPPFAPIWRAPPER std::unordered_map<int, std::vector<std::unique_ptr<FormsObject>>> & getChildren();
 
          /** Gets map of properties (all properties) as a reference
          *
          * \return Map of properties
          */
-		 CPPFAPIWRAPPER std::unordered_map<int, std::unique_ptr<Property>> & getProperties() { return properties; }
+		 CPPFAPIWRAPPER std::unordered_map<int, std::unique_ptr<Property>> & getProperties();
 
          /** Gets properties marked for set
          *
          * \return Collection of Property pointers
          */
-		 CPPFAPIWRAPPER std::vector<Property *> & getMarkedProperties() { return marked_properties; }
+		 CPPFAPIWRAPPER std::vector<Property *> & getMarkedProperties();
       private:
          FAPIModule * module;
          FormsObject * parent;

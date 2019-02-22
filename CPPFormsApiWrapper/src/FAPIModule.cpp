@@ -27,7 +27,7 @@ namespace CPPFAPIWrapper {
       mod = unique_ptr<d2ffmd, function<void(const void*)>>(_mod, deleter);
    }
 
-   FAPIModule::~FAPIModule() {}
+   FAPIModule::~FAPIModule() { TRACE_FNC("") }
 
    bool FAPIModule::hasObject(const int _type_id, const string & _name) const { TRACE_FNC(to_string(_type_id) + " | " + _name)
       return root->hasObject(_type_id, _name);
@@ -148,7 +148,7 @@ namespace CPPFAPIWrapper {
 		return obj;
    }
 
-   void FAPIModule::findGlobals() {
+   void FAPIModule::findGlobals() { TRACE_FNC("")
 	   globals.clear();
 
 	   auto triggers = getTriggers();
@@ -171,6 +171,10 @@ namespace CPPFAPIWrapper {
 		   for (auto val : match)
 			   globals.insert(val.str().substr(7)); // 7 = `global.` offset
 	   }
+   }
+
+   std::string FAPIModule::getFilepath() const { TRACE_FNC("")
+	   return filepath;
    }
 
    void FAPIModule::inheritAllProp() { TRACE_FNC("")
@@ -464,5 +468,23 @@ namespace CPPFAPIWrapper {
       return D2FS_SUCCESS;
    }
 
-   string FAPIModule::getName() const { return root->getName(); }
+   FAPIContext * FAPIModule::getContext() const { TRACE_FNC("")
+	   return ctx;
+   }
+
+   d2ffmd * FAPIModule::getModule() const { TRACE_FNC("")
+	   return mod.get();
+   }
+
+   FormsObject * FAPIModule::getRoot() const { TRACE_FNC("")
+	   return root.get();
+   }
+
+   string FAPIModule::getName() const { TRACE_FNC("")
+	   return root->getName(); 
+   }
+
+   std::unordered_set<std::string> FAPIModule::getSourceModules() const { TRACE_FNC("")
+	   return source_modules;
+   }
 }

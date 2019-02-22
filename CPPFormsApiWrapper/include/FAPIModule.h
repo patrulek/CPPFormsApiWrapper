@@ -200,25 +200,25 @@ namespace CPPFAPIWrapper {
          *
          * \return Filepath to module
          */
-		 CPPFAPIWRAPPER std::string getFilepath() const { return filepath; }
+		 CPPFAPIWRAPPER std::string getFilepath() const;
 
          /** Gets FAPIContext pointer which module is attached to
          *
          * \return FAPIContext pointer.
          */
-         CPPFAPIWRAPPER FAPIContext * getContext() const { return ctx; }
+		 CPPFAPIWRAPPER FAPIContext * getContext() const;
 
          /** Gets pointer to OracleForms object
          *
          * \return Pointer to OracleForms object
          */
-		 CPPFAPIWRAPPER d2ffmd * getModule() const { return mod.get(); }
+		 CPPFAPIWRAPPER d2ffmd * getModule() const;
 
          /** Gets root object of module
          *
          * \return Pointer to FormsObject root object.
          */
-		 CPPFAPIWRAPPER FormsObject * getRoot() const { return root.get(); }
+		 CPPFAPIWRAPPER FormsObject * getRoot() const;
 
          /** Gets name of a module
          *
@@ -230,7 +230,7 @@ namespace CPPFAPIWrapper {
          *
          * \return Set of source module names.
          */
-		 CPPFAPIWRAPPER std::unordered_set<std::string> getSourceModules() const { return source_modules; }
+		 CPPFAPIWRAPPER std::unordered_set<std::string> getSourceModules() const;
       private:
          FAPIContext * ctx;
          std::string filepath;

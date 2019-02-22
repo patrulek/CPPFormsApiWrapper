@@ -15,6 +15,18 @@ namespace CPPFAPIWrapper {
       }
    }
 
+   std::string FAPILogger::getFilepath() {
+	   return filepath;
+   }
+
+   bool FAPILogger::isEnabled() {
+	   return is_enabled;
+   }
+
+   easylogger::LogLevel FAPILogger::getLogLevel() {
+	   return level;
+   }
+
    void FAPILogger::debug(std::string _str) {
       if( is_enabled ) {
          LOG_DEBUG(logger, _str);

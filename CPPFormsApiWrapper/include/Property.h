@@ -49,37 +49,37 @@ namespace CPPFAPIWrapper {
          *
          * \return Property original state
          */
-		 CPPFAPIWRAPPER PropState getOriginalState() const { return original_state; }
+		 CPPFAPIWRAPPER PropState getOriginalState() const;
 
          /** Gets current state of property
          *
          * \return Property current state
          */
-		 CPPFAPIWRAPPER PropState getState() const { return state; }
+		 CPPFAPIWRAPPER PropState getState() const;
 
          /** Gets property id
          *
          * \return OracleForms property id
          */
-		 CPPFAPIWRAPPER int getId() const { return prop_id; }
+		 CPPFAPIWRAPPER int getId() const;
 
          /** Gets property type
          *
          * \return OracleForms property type
          */
-		 CPPFAPIWRAPPER int getType() const { return prop_type; }
+		 CPPFAPIWRAPPER int getType() const;
 
          /** Gets property dirtiness. If true, internal OracleForms property value needs to be set.
          *
          * \return Dirtiness flag.
          */
-		 CPPFAPIWRAPPER bool isDirty() const { return dirty; }
+		 CPPFAPIWRAPPER bool isDirty() const;
 
          /** Gets parent object which property is assigned to
          *
          * \return FormsObject pointer
          */
-		 CPPFAPIWRAPPER FormsObject * getParent() const { return parent; }
+		 CPPFAPIWRAPPER FormsObject * getParent() const;
       private:
 		 CPPFAPIWRAPPER void checkValue();
 		 CPPFAPIWRAPPER void checkStateOnInit();

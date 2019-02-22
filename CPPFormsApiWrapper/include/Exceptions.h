@@ -7,6 +7,7 @@
 #include <exception>
 
 #include "FAPIWrapper.h"
+#include "FAPILogger.h"
 
 namespace CPPFAPIWrapper {
 
@@ -19,17 +20,17 @@ namespace CPPFAPIWrapper {
    class FAPIException : public std::exception {
       public:
          CPPFAPIWRAPPER FAPIException(Reason _reason, const char * _file, int _line, std::string _msg = "", int _status = -1)
-            : reason(_reason), file(_file), line(_line), msg(_msg), status(_status) {
+            : reason(_reason), file(_file), line(_line), msg(_msg), status(_status) { TRACE_FNC("")
             prepareString();
          }
-		 CPPFAPIWRAPPER virtual ~FAPIException() {}
+		 CPPFAPIWRAPPER virtual ~FAPIException() { TRACE_FNC("") }
 
-		 CPPFAPIWRAPPER virtual const char * what() const throw() {
+		 CPPFAPIWRAPPER virtual const char * what() const throw() { TRACE_FNC("")
             return msg.c_str();
          }
 
       private:
-         CPPFAPIWRAPPER void prepareString() {
+         CPPFAPIWRAPPER void prepareString() { TRACE_FNC("")
             std::string str = std::string(file) + " line: " + std::to_string(line);
 
             if( status > -1 )
@@ -38,7 +39,7 @@ namespace CPPFAPIWrapper {
             msg += "\n" + reasonStr() + ": " + str;
          }
 
-		 CPPFAPIWRAPPER std::string reasonStr() {
+		 CPPFAPIWRAPPER std::string reasonStr() { TRACE_FNC("")
             if( reason == Reason::INTERNAL_ERROR )
                return "C Forms Api error";
             else if( reason == Reason::OBJECT_NOT_FOUND )
