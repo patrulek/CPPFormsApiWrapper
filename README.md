@@ -158,15 +158,15 @@ Restoring broken inheritance.
 // include
 
 int main() {
-// this
-ctx->loadModuleWithSources(filepath);
-// or that
-ctx->loadModule(filepath);
-auto mod = ctx->getModule(filepath);
-mod->checkOverriden();
+  // this
+  ctx->loadModuleWithSources(filepath);
+  // or that
+  ctx->loadModule(filepath);
+  auto mod = ctx->getModule(filepath);
+  mod->checkOverriden();
 
-mod->inheritAllProp();
-mod->saveModule();
+  mod->inheritAllProp();
+  mod->saveModule();
 }
 ```
 
@@ -176,14 +176,14 @@ mod->saveModule();
 // include
 
 int main() {
-// this
-ctx->loadModuleWithSources(filepath);
-// or that
-ctx->loadModule(filepath);
-auto mod = ctx->getModule(filepath);
-mod->checkOverriden();
+  // this
+  ctx->loadModuleWithSources(filepath);
+  // or that
+  ctx->loadModule(filepath);
+  auto mod = ctx->getModule(filepath);
+  mod->checkOverriden();
 
-mod->saveModule();
+  mod->saveModule();
 }
 ```
 
@@ -195,13 +195,13 @@ Modyfing object properties:
 // include
 
 int main() {
-ctx->loadModule(filepath);
-auto mod = ctx->getModule(filepath);
+  ctx->loadModule(filepath);
+  auto mod = ctx->getModule(filepath);
 
-auto & properties = mod->getObject(...).getProperties();
-properties[D2FP_*].setValue(...);
+  auto & properties = mod->getObject(...).getProperties();
+  properties[D2FP_*].setValue(...);
 
-mod->saveModule();
+  mod->saveModule();
 }
 ```
 
