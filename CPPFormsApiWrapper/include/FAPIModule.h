@@ -79,6 +79,9 @@ namespace CPPFAPIWrapper {
 		/** Compiles all PLSQL objects in .fmb module*/
 		CPPFAPIWRAPPER void compileModule();
 
+		/** Check if module is compiling correctly */
+		CPPFAPIWRAPPER bool isCompiling() noexcept;
+
 		/** Generates .fmx file in same folder as module */
 		CPPFAPIWRAPPER void generateModule();
 

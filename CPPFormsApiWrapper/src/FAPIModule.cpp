@@ -107,7 +107,7 @@ namespace CPPFAPIWrapper {
 	bool FAPIModule::hasInternalObject(const int _type_id, const string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
 		auto splits = splitString(_fullname, ".");
 		d2fob * obj{ nullptr };
-		unordered_map<d2fob *, vector<d2fob *>> objects({ mod.get(),{} });
+		unordered_map<d2fob *, vector<d2fob *>> objects{ { mod.get(),{} } };
 
 		for (auto & split : splits) {
 			FAPILogger::debug(split);
@@ -301,6 +301,14 @@ namespace CPPFAPIWrapper {
 
 		if (status != D2FS_SUCCESS)
 			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status };
+	}
+
+	bool FAPIModule::isCompiling() noexcept { TRACE_FNC("")
+		try {
+			compileModule();
+			return true;
+		}
+		catch (exception & ex) { return false; }
 	}
 
 	void FAPIModule::generateModule() { TRACE_FNC("")
