@@ -189,7 +189,7 @@ mod->saveModule();
 
 ---
 
-Modyfikacja elementów formularza:
+Modyfing object properties:
 
 ```C++
 // include
@@ -206,15 +206,3 @@ mod->saveModule();
 ```
 
 ---
-
-
-### TIPS
-
-It's a good habit to check compilation before saving module:
-
-```C++
-...
-if(mod->isCompiling())
-  mod->saveModule()
-...
-```
