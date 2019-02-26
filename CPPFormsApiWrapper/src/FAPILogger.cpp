@@ -8,77 +8,77 @@
 using namespace std::chrono;
 
 namespace CPPFAPIWrapper {
-   std::string FAPILogger::filepath = "c:/temp/cppfapilog.txt";
-   std::ofstream FAPILogger::stream = std::ofstream(filepath);
-   bool FAPILogger::is_enabled = true;
-   easylogger::LogLevel FAPILogger::level = easylogger::LEVEL_WARNING;
-   easylogger::Logger FAPILogger::logger = easylogger::Logger("CPPFapiLogger");
+	std::string FAPILogger::filepath{ "c:/temp/cppfapilog.txt" };
+	std::ofstream FAPILogger::stream = std::ofstream{ filepath };
+	bool FAPILogger::is_enabled{ true };
+	easylogger::LogLevel FAPILogger::level{ easylogger::LEVEL_WARNING };
+	easylogger::Logger FAPILogger::logger = easylogger::Logger{ "CPPFapiLogger" };
 
-   std::string FAPILogger::getTimestamp() {
-	   return date::format("[%F %T] ", time_point_cast<milliseconds>(system_clock::now()));
-   }
+	std::string FAPILogger::getTimestamp() {
+		return date::format("[%F %T] ", time_point_cast<milliseconds>(system_clock::now()));
+	}
 
-   void FAPILogger::trace(std::string _str) {
-      if( is_enabled ) {
-         LOG_TRACE(logger, getTimestamp() + _str);
-         flush();
-      }
-   }
+	void FAPILogger::trace(std::string _str) {
+		if (is_enabled) {
+			LOG_TRACE(logger, getTimestamp() + _str);
+			flush();
+		}
+	}
 
-   std::string FAPILogger::getFilepath() {
-	   return filepath;
-   }
+	std::string FAPILogger::getFilepath() {
+		return filepath;
+	}
 
-   bool FAPILogger::isEnabled() {
-	   return is_enabled;
-   }
+	bool FAPILogger::isEnabled() {
+		return is_enabled;
+	}
 
-   easylogger::LogLevel FAPILogger::getLogLevel() {
-	   return level;
-   }
+	easylogger::LogLevel FAPILogger::getLogLevel() {
+		return level;
+	}
 
-   void FAPILogger::debug(std::string _str) {
-      if( is_enabled ) {
-         LOG_DEBUG(logger, getTimestamp() + _str);
-         flush();
-      }
-   }
+	void FAPILogger::debug(std::string _str) {
+		if (is_enabled) {
+			LOG_DEBUG(logger, getTimestamp() + _str);
+			flush();
+		}
+	}
 
-   void FAPILogger::info(std::string _str) {
-      if( is_enabled ) {
-         LOG_INFO(logger, getTimestamp() + _str);
-         flush();
-      }
-   }
+	void FAPILogger::info(std::string _str) {
+		if (is_enabled) {
+			LOG_INFO(logger, getTimestamp() + _str);
+			flush();
+		}
+	}
 
-   void FAPILogger::warn(std::string _str) {
-      if( is_enabled ) {
-         LOG_WARNING(logger, getTimestamp() + _str);
-         flush();
-      }
-   }
+	void FAPILogger::warn(std::string _str) {
+		if (is_enabled) {
+			LOG_WARNING(logger, getTimestamp() + _str);
+			flush();
+		}
+	}
 
-   void FAPILogger::error(std::string _str) {
-      if( is_enabled ) {
-         LOG_ERROR(logger, getTimestamp() + _str);
-         flush();
-      }
-   }
+	void FAPILogger::error(std::string _str) {
+		if (is_enabled) {
+			LOG_ERROR(logger, getTimestamp() + _str);
+			flush();
+		}
+	}
 
-   void FAPILogger::fatal(std::string _str) {
-      if( is_enabled ) {
-         LOG_FATAL(logger, getTimestamp() + _str);
-         flush();
-      }
-   }
+	void FAPILogger::fatal(std::string _str) {
+		if (is_enabled) {
+			LOG_FATAL(logger, getTimestamp() + _str);
+			flush();
+		}
+	}
 
-   void FAPILogger::changePath(std::string _logpath) {
-      filepath = _logpath;
-      stream = std::ofstream(filepath);
-   }
+	void FAPILogger::changePath(std::string _logpath) {
+		filepath = _logpath;
+		stream = std::ofstream{ filepath };
+	}
 
-   void FAPILogger::setLevel(easylogger::LogLevel _level) { level = _level; logger.Level(level); }
-   void FAPILogger::enable() { is_enabled = true; }
-   void FAPILogger::disable() { is_enabled = false; }
-   void FAPILogger::flush() { logger.Stream(stream); }
+	void FAPILogger::setLevel(easylogger::LogLevel _level) { level = _level; logger.Level(level); }
+	void FAPILogger::enable() { is_enabled = true; }
+	void FAPILogger::disable() { is_enabled = false; }
+	void FAPILogger::flush() { logger.Stream(stream); }
 }

@@ -11,50 +11,49 @@
 
 namespace CPPFAPIWrapper {
 
-   enum class CPPFAPIWRAPPER  Reason {
-      INTERNAL_ERROR, // c forms api status != success
-      OBJECT_NOT_FOUND,
-      OTHER
-   };
+	enum class CPPFAPIWRAPPER  Reason {
+		INTERNAL_ERROR, // c forms api status != success
+		OBJECT_NOT_FOUND,
+		OTHER
+	};
 
-   class FAPIException : public std::exception {
-      public:
-         CPPFAPIWRAPPER FAPIException(Reason _reason, const char * _file, int _line, std::string _msg = "", int _status = -1)
-            : reason(_reason), file(_file), line(_line), msg(_msg), status(_status) { TRACE_FNC("")
-            prepareString();
-         }
-		 CPPFAPIWRAPPER virtual ~FAPIException() { TRACE_FNC("") }
+	class FAPIException : public std::exception {
+	public:
+		CPPFAPIWRAPPER FAPIException(Reason _reason, const char * _file, int _line, std::string _msg = "", int _status = -1)
+			: reason(_reason), file(_file), line(_line), msg(_msg), status(_status) { TRACE_FNC("")
+			prepareString();
+		}
+		CPPFAPIWRAPPER virtual ~FAPIException() { TRACE_FNC("") }
 
-		 CPPFAPIWRAPPER virtual const char * what() const throw() { TRACE_FNC("")
-            return msg.c_str();
-         }
+		CPPFAPIWRAPPER virtual const char * what() const throw() { TRACE_FNC("")
+			return msg.c_str();
+		}
 
-      private:
-         CPPFAPIWRAPPER void prepareString() { TRACE_FNC("")
-            std::string str = std::string(file) + " line: " + std::to_string(line);
+	private:
+		CPPFAPIWRAPPER void prepareString() { TRACE_FNC("")
+			std::string str = std::string(file) + " line: " + std::to_string(line);
 
-            if( status > -1 )
-               str += ": " + errors[status];
+			if (status > -1)
+				str += ": " + errors[status];
 
-            msg += "\n" + reasonStr() + ": " + str;
-         }
+			msg += "\n" + reasonStr() + ": " + str;
+		}
 
-		 CPPFAPIWRAPPER std::string reasonStr() { TRACE_FNC("")
-            if( reason == Reason::INTERNAL_ERROR )
-               return "C Forms Api error";
-            else if( reason == Reason::OBJECT_NOT_FOUND )
-               return "Object not found";
-            else
-               return "Other error";
-         }
+		CPPFAPIWRAPPER std::string reasonStr() { TRACE_FNC("")
+			if (reason == Reason::INTERNAL_ERROR)
+				return "C Forms Api error";
+			else if (reason == Reason::OBJECT_NOT_FOUND)
+				return "Object not found";
+			else
+				return "Other error";
+		}
 
-         Reason reason;
-         const char * file;
-         int line;
-         std::string msg;
-         int status;
-   };
+		Reason reason;
+		const char * file;
+		int line;
+		std::string msg;
+		int status;
+	};
 }
-
 
 #endif // EXCEPTIONS_H_INCLUDED

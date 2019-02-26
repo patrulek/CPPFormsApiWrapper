@@ -4,37 +4,37 @@
 #include "Exceptions.h"
 
 namespace CPPFAPIWrapper {
-   template<class T>
-   class Expected
-   {
-      public:
-		 CPPFAPIWRAPPER Expected(T * _r) : result(_r), gotResult(_r) { TRACE_FNC("")
-            if( !gotResult )
-               ex = FAPIException(Reason::OBJECT_NOT_FOUND, __FILE__, __LINE__, typeid(T).name());
-         }
-         
-		 CPPFAPIWRAPPER Expected(T & _r) : result(&_r), gotResult(true) { TRACE_FNC("") };
+	template<class T>
+	class Expected
+	{
+	public:
+		CPPFAPIWRAPPER Expected(T * _r) : result(_r), gotResult(_r) { TRACE_FNC("")
+			if (!gotResult)
+				ex = FAPIException{ Reason::OBJECT_NOT_FOUND, __FILE__, __LINE__, typeid(T).name() };
+		}
 
-		 CPPFAPIWRAPPER T * operator->() const {TRACE_FNC("")
-            return get();
-         }
+		CPPFAPIWRAPPER Expected(T & _r) : result(&_r), gotResult(true) { TRACE_FNC("") };
 
-		 CPPFAPIWRAPPER T * get() const { TRACE_FNC("")
-            if( !result )
-               throw ex;
+		CPPFAPIWRAPPER T * operator->() const { TRACE_FNC("")
+			return get();
+		}
 
-            return result;
-         }
+		CPPFAPIWRAPPER T * get() const { TRACE_FNC("")
+			if (!result)
+				throw ex;
 
-		 CPPFAPIWRAPPER bool isValid() const { TRACE_FNC("")
-			 return gotResult; 
-		 }
+			return result;
+		}
 
-      private:
-         T * result;
-         std::exception ex;
-         bool gotResult;
-   };
+		CPPFAPIWRAPPER bool isValid() const { TRACE_FNC("")
+			return gotResult;
+		}
+
+	private:
+		T * result;
+		std::exception ex;
+		bool gotResult;
+	};
 }
 
 #endif // EXPECTED_H
