@@ -42,7 +42,7 @@ namespace CPPFAPIWrapper {
 		vector<FormsObject *> to_process{ root.get() };
 		string name{ *splits.end() };
 
-		for (auto & split : splits) {
+		for (const auto & split : splits) {
 			FAPILogger::debug(split);
 
 			vector<FormsObject *> new_process;
@@ -51,7 +51,7 @@ namespace CPPFAPIWrapper {
 				auto curr{ to_process[0] }; to_process.erase(to_process.begin());
 				auto & children_types{ type_hierarchy[curr->getId()] };
 
-				for (auto & type : children_types) {
+				for (const auto & type : children_types) {
 					try {
 						auto child = curr->getObject(type, split).get();
 
@@ -59,8 +59,7 @@ namespace CPPFAPIWrapper {
 							return child;
 						else
 							new_process.emplace_back(child);
-					}
-					catch (exception & ex) { FAPILogger::warn(ex.what()); }
+					} catch (exception & ex) { FAPILogger::warn(ex.what()); }
 				}
 			}
 
@@ -84,9 +83,8 @@ namespace CPPFAPIWrapper {
 			objects.emplace_back(curr);
 			auto & children = curr->getChildren();
 
-			for (auto & entry : children)
-				for (auto & child : entry.second)
-					to_process.emplace_back(child.get());
+			for (const auto & entry : children)
+				transform(entry.second.begin(), entry.second.end(), back_inserter(to_process), [](const auto & _child) { return _child.get(); });
 		}
 
 		return objects;
@@ -107,21 +105,21 @@ namespace CPPFAPIWrapper {
 	bool FAPIModule::hasInternalObject(const int _type_id, const string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
 		auto splits = splitString(_fullname, ".");
 		d2fob * obj{ nullptr };
-		unordered_map<d2fob *, vector<d2fob *>> objects{ { mod.get(),{} } };
+		unordered_map<d2fob *, vector<d2fob *>> objects{ { mod.get(), {} } };
 
-		for (auto & split : splits) {
+		for (const auto & split : splits) {
 			FAPILogger::debug(split);
 
 			for (auto & objects_ : objects) {
 				if (!objects[objects_.first].empty())
 					continue;
 
-				for (auto & type : type_hierarchy) {
+				for (const auto & type : type_hierarchy) {
 					obj = nullptr;
 					int status = d2fobfo_FindObj(getContext()->getContext(), objects_.first, stringToText(split), type.first, &obj);
 
 					if (status != D2FS_SUCCESS && status != D2FS_OBJNOTFOUND)
-						throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status);
+						throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status };
 
 					if (obj) {
 						objects_.second.push_back(obj);
@@ -157,20 +155,16 @@ namespace CPPFAPIWrapper {
 		regex pattern{ "global.[A-Za-z0-9_!@#$%^&*()]+", regex_constants::icase };
 		smatch match;
 
-		for (auto & trg : triggers) {
+		for (const auto & trg : triggers) {
 			string code = trg->getProperties().at(D2FP_TRG_TXT)->getValue();
 			regex_search(code, match, pattern);
-
-			for (auto val : match)
-				globals.insert(val.str().substr(7)); // 7 = `global.` offset
+			transform(match.begin(), match.end(), inserter(globals, globals.begin()), [](const auto & _val) { return _val.str().substr(7); }); // 7 = `global.` offset
 		}
 
-		for (auto & pgu : prog_units) {
+		for (const auto & pgu : prog_units) {
 			string code = pgu->getProperties().at(D2FP_PGU_TXT)->getValue();
 			regex_search(code, match, pattern);
-
-			for (auto val : match)
-				globals.insert(val.str().substr(7)); // 7 = `global.` offset
+			transform(match.begin(), match.end(), inserter(globals, globals.begin()), [](const auto & _val) { return _val.str().substr(7); }); // 7 = `global.` offset
 		}
 	}
 
@@ -179,12 +173,12 @@ namespace CPPFAPIWrapper {
 	}
 
 	void FAPIModule::inheritAllProp() { TRACE_FNC("")
-		for (auto obj : getAllObjects())
+		for (const auto & obj : getAllObjects())
 			obj->inheritAllProp();
 	}
 
 	void FAPIModule::inheritAllPLSQL() { TRACE_FNC("")
-		for (auto obj : getAllObjects()) {
+		for (const auto & obj : getAllObjects()) {
 			if (obj->getId() == D2FFO_TRIGGER)
 				obj->inheritProp(D2FP_TRG_TXT);
 			else if (obj->getId() == D2FFO_PROG_UNIT)
@@ -193,23 +187,21 @@ namespace CPPFAPIWrapper {
 	}
 
 	void FAPIModule::inheritPLSQL(const vector<string> & _units) { TRACE_FNC("")
-		for (auto & str : _units) {
+		for (const auto & str : _units) {
 			try {
-				auto pgu = getObject(D2FFO_PROG_UNIT, str);
+				const auto pgu = getObject(D2FFO_PROG_UNIT, str);
 				pgu->inheritProp(D2FP_PGU_TXT);
-			}
-			catch (exception & ex) { FAPILogger::warn(ex.what()); }
+			} catch (exception & ex) { FAPILogger::warn(ex.what()); }
 
 			try {
-				auto trg = getObject(D2FFO_TRIGGER, str);
+				const auto trg = getObject(D2FFO_TRIGGER, str);
 				trg->inheritProp(D2FP_TRG_TXT);
-			}
-			catch (exception & ex) { FAPILogger::warn(ex.what()); }
+			} catch (exception & ex) { FAPILogger::warn(ex.what()); }
 		}
 	}
 
 	void FAPIModule::inheritPLSQL(const vector<FormsObject *> & _units) { TRACE_FNC("")
-		for (auto obj : _units) {
+		for (const auto & obj : _units) {
 			if (obj->getId() == D2FFO_TRIGGER)
 				obj->inheritProp(D2FP_TRG_TXT);
 			else if (obj->getId() == D2FFO_PROG_UNIT)
@@ -234,8 +226,8 @@ namespace CPPFAPIWrapper {
 	}
 
 	void FAPIModule::checkOverriden() { TRACE_FNC("")
-		for (auto fo : getAllObjects())
-			for (auto & entry : fo->getProperties())
+		for (const auto & fo : getAllObjects())
+			for (const auto & entry : fo->getProperties())
 				entry.second->checkState();
 	}
 
@@ -280,10 +272,10 @@ namespace CPPFAPIWrapper {
 
 		FAPILogger::debug(path);
 
-		for (auto marked_obj : marked_objects) {
+		for (const auto & marked_obj : marked_objects) {
 			auto & marked_properties = marked_obj->getMarkedProperties();
 
-			for (auto & marked_prop : marked_properties)
+			for (const auto & marked_prop : marked_properties)
 				marked_obj->setProperty(marked_prop);
 
 			marked_properties.clear();
@@ -307,8 +299,7 @@ namespace CPPFAPIWrapper {
 		try {
 			compileModule();
 			return true;
-		}
-		catch (exception & ex) { return false; }
+		} catch (exception &) { return false; }
 	}
 
 	void FAPIModule::generateModule() { TRACE_FNC("")
@@ -333,13 +324,14 @@ namespace CPPFAPIWrapper {
 	vector<FormsObject *> FAPIModule::getTriggers() const { TRACE_FNC("")
 		auto triggers = getFormTriggers();
 
-		for (auto block : getBlocks()) {
-			for (auto block_trigger : block->getObjects(D2FFO_TRIGGER))
-				triggers.emplace_back(block_trigger);
+		for (const auto & block : getBlocks()) {
+			const auto & blk_triggers = block->getObjects(D2FFO_TRIGGER);
+			copy(blk_triggers.begin(), blk_triggers.end(), back_inserter(triggers));
 
-			for (auto item : block->getObjects(D2FFO_ITEM))
-				for (auto item_trigger : item->getObjects(D2FFO_TRIGGER))
-					triggers.emplace_back(item_trigger);
+			for (const auto & item : block->getObjects(D2FFO_ITEM)) {
+				const auto & itm_triggers = item->getObjects(D2FFO_TRIGGER);
+				copy(itm_triggers.begin(), itm_triggers.end(), back_inserter(triggers));
+			}
 		}
 
 		return triggers;
@@ -428,8 +420,7 @@ namespace CPPFAPIWrapper {
 					source_modules.insert(truncModuleName(property->getValue()));
 
 				properties.emplace(prop_num, move(property));
-			}
-			else if (prop_type == D2FP_TYP_OBJECT)
+			} else if (prop_type == D2FP_TYP_OBJECT)
 				object_properties.emplace_back(prop_num);
 		}
 

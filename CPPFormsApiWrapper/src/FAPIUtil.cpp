@@ -25,8 +25,8 @@ namespace CPPFAPIWrapper {
 			return easylogger::LogLevel::LEVEL_WARNING;
 		else if (level == "E" || level == "ERROR")
 			return easylogger::LogLevel::LEVEL_ERROR;
-		else
-			return easylogger::LogLevel::LEVEL_FATAL;
+		
+		return easylogger::LogLevel::LEVEL_FATAL;
 	}
 
 	string toUpper(string _str) { TRACE_FNC(_str)
@@ -43,11 +43,11 @@ namespace CPPFAPIWrapper {
 		return reinterpret_cast<text *>(const_cast<char *>(_str.c_str()));
 	}
 
-	string modulePathFromName(string _str) { TRACE_FNC(_str)
+	string modulePathFromName(const string & _str) { TRACE_FNC(_str)
 		vector<string> fmb_paths = getFMBPaths();
 		string name = truncModuleName(_str) + ".FMB";
 
-		for (string fmb_path : fmb_paths) {
+		for (const auto & fmb_path : fmb_paths) {
 			string filepath = fmb_path + name;
 			FAPILogger::debug(filepath);
 
@@ -66,14 +66,14 @@ namespace CPPFAPIWrapper {
 		return exists;
 	}
 
-	string moduleNameFromPath(string _str) { TRACE_FNC(_str)
+	string moduleNameFromPath(const string & _str) { TRACE_FNC(_str)
 		int pos1 = _str.rfind("/") + 1;
 		int pos2 = _str.find(".", pos1);
 
 		return toUpper(_str.substr(pos1, pos2 - pos1));
 	}
 
-	string truncModuleName(string _str) { TRACE_FNC(_str)
+	string truncModuleName(const string & _str) { TRACE_FNC(_str)
 		unsigned int pos = _str.find(".");
 		return pos == string::npos ? toUpper(_str) : toUpper(_str.substr(0, pos));
 	}

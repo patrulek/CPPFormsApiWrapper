@@ -19,7 +19,7 @@ namespace CPPFAPIWrapper {
 
 	class FAPIException : public std::exception {
 	public:
-		CPPFAPIWRAPPER FAPIException(Reason _reason, const char * _file, int _line, std::string _msg = "", int _status = -1)
+		CPPFAPIWRAPPER FAPIException(Reason _reason, const char * _file, int _line, const std::string _msg = "", int _status = -1)
 			: reason(_reason), file(_file), line(_line), msg(_msg), status(_status) { TRACE_FNC("")
 			prepareString();
 		}
@@ -31,7 +31,7 @@ namespace CPPFAPIWrapper {
 
 	private:
 		CPPFAPIWRAPPER void prepareString() { TRACE_FNC("")
-			std::string str = std::string(file) + " line: " + std::to_string(line);
+			std::string str = file + " line: " + std::to_string(line);
 
 			if (status > -1)
 				str += ": " + errors[status];
@@ -49,7 +49,7 @@ namespace CPPFAPIWrapper {
 		}
 
 		Reason reason;
-		const char * file;
+		std::string file;
 		int line;
 		std::string msg;
 		int status;

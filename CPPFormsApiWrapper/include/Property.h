@@ -85,7 +85,7 @@ namespace CPPFAPIWrapper {
 		CPPFAPIWRAPPER void checkStateOnInit();
 
 		CPPFAPIWRAPPER std::string getObjectValue();
-		CPPFAPIWRAPPER void setObjectValue(const std::string & _value);
+		CPPFAPIWRAPPER void setObjectValue();
 
 		FormsObject * parent;
 		PropState original_state;

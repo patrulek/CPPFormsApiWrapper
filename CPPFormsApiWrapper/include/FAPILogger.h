@@ -15,14 +15,14 @@ namespace CPPFAPIWrapper {
 		CPPFAPIWRAPPER static void disable();
 		CPPFAPIWRAPPER static void enable();
 		CPPFAPIWRAPPER static void setLevel(easylogger::LogLevel _level);
-		CPPFAPIWRAPPER static void changePath(std::string _logpath);
+		CPPFAPIWRAPPER static void changePath(const std::string & _logpath);
 
-		CPPFAPIWRAPPER static void fatal(std::string _str);
-		CPPFAPIWRAPPER static void error(std::string _str);
-		CPPFAPIWRAPPER static void warn(std::string _str);
-		CPPFAPIWRAPPER static void info(std::string _str);
-		CPPFAPIWRAPPER static void debug(std::string _str);
-		CPPFAPIWRAPPER static void trace(std::string _str);
+		CPPFAPIWRAPPER static void fatal(const std::string & _str);
+		CPPFAPIWRAPPER static void error(const std::string & _str);
+		CPPFAPIWRAPPER static void warn(const std::string & _str);
+		CPPFAPIWRAPPER static void info(const std::string & _str);
+		CPPFAPIWRAPPER static void debug(const std::string & _str);
+		CPPFAPIWRAPPER static void trace(const std::string & _str);
 
 		CPPFAPIWRAPPER static std::string getFilepath();
 		CPPFAPIWRAPPER static bool isEnabled();

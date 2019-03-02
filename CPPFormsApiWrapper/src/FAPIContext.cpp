@@ -59,7 +59,7 @@ namespace CPPFAPIWrapper {
 		while (true) {
 			unordered_set<string> to_load;
 
-			for (auto & source_mod : to_process) {
+			for (const auto & source_mod : to_process) {
 				string path = modulePathFromName(source_mod);
 
 				if (hasModule(path))

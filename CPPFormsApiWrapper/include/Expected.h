@@ -8,12 +8,14 @@ namespace CPPFAPIWrapper {
 	class Expected
 	{
 	public:
-		CPPFAPIWRAPPER Expected(T * _r) : result(_r), gotResult(_r) { TRACE_FNC("")
+		CPPFAPIWRAPPER explicit Expected(T * _r) : result(_r), gotResult(_r) { TRACE_FNC("")
 			if (!gotResult)
 				ex = FAPIException{ Reason::OBJECT_NOT_FOUND, __FILE__, __LINE__, typeid(T).name() };
 		}
 
-		CPPFAPIWRAPPER Expected(T & _r) : result(&_r), gotResult(true) { TRACE_FNC("") };
+		CPPFAPIWRAPPER explicit Expected(T & _r) : result(&_r), gotResult(true) { TRACE_FNC("") };
+
+		Expected() = delete;
 
 		CPPFAPIWRAPPER T * operator->() const { TRACE_FNC("")
 			return get();

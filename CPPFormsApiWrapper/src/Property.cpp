@@ -50,7 +50,7 @@ namespace CPPFAPIWrapper {
 		bool overriden{ false };
 		string source_prop;
 
-		for (auto source : parent->findSources()) {
+		for (const auto & source : parent->findSources()) {
 			auto & source_props = source->getProperties();
 
 			if (source_props.find(prop_id) != source_props.end()) {
@@ -86,13 +86,11 @@ namespace CPPFAPIWrapper {
 			int v_value;
 			d2fobgb_GetBoolProp(ctx, obj, prop_id, &v_value);
 			value_ = to_string(v_value);
-		}
-		else if (prop_type == D2FP_TYP_NUMBER) {
+		} else if (prop_type == D2FP_TYP_NUMBER) {
 			number v_value;
 			d2fobgn_GetNumProp(ctx, obj, prop_id, &v_value);
 			value_ = to_string(v_value);
-		}
-		else if (prop_type == D2FP_TYP_TEXT) {
+		} else if (prop_type == D2FP_TYP_TEXT) {
 			text * v_value{ nullptr };
 			d2fobgt_GetTextProp(ctx, obj, prop_id, &v_value);
 
@@ -105,7 +103,7 @@ namespace CPPFAPIWrapper {
 		return value_;
 	}
 
-	void Property::setObjectValue(const string & _value) { TRACE_FNC(_value)
+	void Property::setObjectValue() { TRACE_FNC("")
 		auto ctx = parent->getContext()->getContext();
 		auto obj = parent->getFormsObj();
 
@@ -113,11 +111,11 @@ namespace CPPFAPIWrapper {
 		int status{ D2FS_SUCCESS };
 
 		if (prop_type == D2FP_TYP_BOOLEAN)
-			status = d2fobsb_SetBoolProp(ctx, obj, prop_id, stoi(_value));
+			status = d2fobsb_SetBoolProp(ctx, obj, prop_id, stoi(value));
 		else if (prop_type == D2FP_TYP_NUMBER)
-			status = d2fobsn_SetNumProp(ctx, obj, prop_id, stoi(_value));
+			status = d2fobsn_SetNumProp(ctx, obj, prop_id, stoi(value));
 		else if (prop_type == D2FP_TYP_TEXT)
-			status = d2fobst_SetTextProp(ctx, obj, prop_id, reinterpret_cast<text *>(const_cast<char *>(_value.c_str())));
+			status = d2fobst_SetTextProp(ctx, obj, prop_id, reinterpret_cast<text *>(const_cast<char *>(value.c_str())));
 
 		if (status != D2FS_SUCCESS)
 			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, to_string(prop_id), status };
@@ -186,6 +184,8 @@ namespace CPPFAPIWrapper {
 	}
 
 	void Property::accept() { TRACE_FNC("")
+		setObjectValue();
+
 		original_state = state;
 		original_value = value;
 		dirty = false;

@@ -37,21 +37,21 @@ namespace CPPFAPIWrapper {
 	* \param _str Name of a module
 	* \return Path to .fmb with a given module name
 	*/
-	CPPFAPIWRAPPER std::string modulePathFromName(std::string _str);
+	CPPFAPIWRAPPER std::string modulePathFromName(const std::string & _str);
 
 	/** Removes folder path and extension from a given path and returns pure file(module) name
 	*
 	* \param _str Path to .fmb
 	* \return File name without extension
 	*/
-	CPPFAPIWRAPPER std::string moduleNameFromPath(std::string _str);
+	CPPFAPIWRAPPER std::string moduleNameFromPath(const std::string & _str);
 
 	/** Removes extension from a given module and returns pure module name (example: MODULE.FMB -> MODULE)
 	*
 	* \param _str Module name with(or without) extension
 	* \return Module name without extension
 	*/
-	CPPFAPIWRAPPER std::string truncModuleName(std::string _str);
+	CPPFAPIWRAPPER std::string truncModuleName(const std::string & _str);
 
 	/** Splits string by a given delimiter
 	*
@@ -79,7 +79,7 @@ namespace CPPFAPIWrapper {
 	* \param _str String describing the logging level. It should be: TRACE/DEBUG/INFO/WARN/ERROR/FATAL or it's first letters.
 	* \return LogLevel value.
 	*/
-	CPPFAPIWRAPPER easylogger::LogLevel levelFromStr(std::string & _str);
+	CPPFAPIWRAPPER easylogger::LogLevel levelFromStr(const std::string & _str);
 }
 
 #endif // FAPIUTIL_H_INCLUDED

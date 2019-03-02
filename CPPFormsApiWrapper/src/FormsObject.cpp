@@ -48,11 +48,9 @@ namespace CPPFAPIWrapper {
 
 					if (new_source)
 						sources.emplace_back(new_source);
-				}
-				else
+				} else
 					break; // TODO ??
-			}
-			else /* other module */ {
+			} else /* other module */ {
 				auto fapi_ctx = getContext();
 				string path = modulePathFromName(mod_name);
 
@@ -125,9 +123,7 @@ namespace CPPFAPIWrapper {
 	vector<FormsObject *> FormsObject::getObjects(const int _type_id) { TRACE_FNC(to_string(_type_id))
 		vector<FormsObject *> objects;
 		auto & children_{ children[_type_id] };
-
-		for (auto & child : children_)
-			objects.emplace_back(child.get());
+		transform(children_.begin(), children_.end(), back_inserter(objects), [](const auto & _child) {return _child.get(); });
 
 		return objects;
 	}
@@ -157,30 +153,16 @@ namespace CPPFAPIWrapper {
 	void FormsObject::setProperty(Property * _property) { TRACE_FNC("")
 		if (!_property->isDirty())
 			return;
-
-		int status{ D2FS_SUCCESS };
-
-		if (_property->getType() == D2FP_TYP_TEXT)
-			status = d2fobst_SetTextProp(module->getContext()->getContext(), forms_obj, _property->getId(), stringToText(_property->getValue()));
-		else if (_property->getType() == D2FP_TYP_NUMBER)
-			status = d2fobsn_SetNumProp(module->getContext()->getContext(), forms_obj, _property->getId(), stoi(_property->getValue()));
-		else if (_property->getType() == D2FP_TYP_BOOLEAN)
-			status = d2fobsb_SetBoolProp(module->getContext()->getContext(), forms_obj, _property->getId(), stoi(_property->getValue()));
-
-		if (status != D2FS_SUCCESS)
-			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, prop_names[_property->getId()] + " - " + _property->getValue(), status };
-		else
-			_property->accept();
+		
+		_property->accept();
 	}
 
 	void FormsObject::inheritAllProp() { TRACE_FNC("")
-		for (auto & entry : properties)
-			entry.second->inherit();
+		for_each(properties.begin(), properties.end(), [](const auto & _entry) { _entry.second->inherit(); });
 	}
 
 	void FormsObject::inheritProps(const vector<int> & _prop_nums) { TRACE_FNC("")
-		for (auto prop_num : _prop_nums)
-			inheritProp(prop_num);
+		for_each(_prop_nums.begin(), _prop_nums.end(), [this](const auto & _prop_num) { inheritProp(_prop_num); });
 	}
 
 	void FormsObject::inheritProp(Property * _property) { TRACE_FNC("")

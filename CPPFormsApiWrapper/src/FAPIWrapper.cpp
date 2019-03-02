@@ -28,7 +28,7 @@ namespace CPPFAPIWrapper {
 	}
 
 	int typeNameToID(const string & _type_name) { TRACE_FNC(_type_name)
-		auto ret = find(obj_types.begin(), obj_types.end(), _type_name) - obj_types.begin();
+		unsigned int ret = find(obj_types.begin(), obj_types.end(), _type_name) - obj_types.begin();
 		FAPILogger::debug(to_string(ret));
 
 		if (ret > obj_types.size())

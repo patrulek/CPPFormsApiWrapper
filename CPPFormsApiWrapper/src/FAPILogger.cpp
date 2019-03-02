@@ -18,7 +18,7 @@ namespace CPPFAPIWrapper {
 		return date::format("[%F %T] ", time_point_cast<milliseconds>(system_clock::now()));
 	}
 
-	void FAPILogger::trace(std::string _str) {
+	void FAPILogger::trace(const std::string & _str) {
 		if (is_enabled) {
 			LOG_TRACE(logger, getTimestamp() + _str);
 			flush();
@@ -37,42 +37,42 @@ namespace CPPFAPIWrapper {
 		return level;
 	}
 
-	void FAPILogger::debug(std::string _str) {
+	void FAPILogger::debug(const std::string & _str) {
 		if (is_enabled) {
 			LOG_DEBUG(logger, getTimestamp() + _str);
 			flush();
 		}
 	}
 
-	void FAPILogger::info(std::string _str) {
+	void FAPILogger::info(const std::string & _str) {
 		if (is_enabled) {
 			LOG_INFO(logger, getTimestamp() + _str);
 			flush();
 		}
 	}
 
-	void FAPILogger::warn(std::string _str) {
+	void FAPILogger::warn(const std::string & _str) {
 		if (is_enabled) {
 			LOG_WARNING(logger, getTimestamp() + _str);
 			flush();
 		}
 	}
 
-	void FAPILogger::error(std::string _str) {
+	void FAPILogger::error(const std::string & _str) {
 		if (is_enabled) {
 			LOG_ERROR(logger, getTimestamp() + _str);
 			flush();
 		}
 	}
 
-	void FAPILogger::fatal(std::string _str) {
+	void FAPILogger::fatal(const std::string & _str) {
 		if (is_enabled) {
 			LOG_FATAL(logger, getTimestamp() + _str);
 			flush();
 		}
 	}
 
-	void FAPILogger::changePath(std::string _logpath) {
+	void FAPILogger::changePath(const std::string & _logpath) {
 		filepath = _logpath;
 		stream = std::ofstream{ filepath };
 	}
