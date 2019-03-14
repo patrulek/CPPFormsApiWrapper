@@ -60,8 +60,7 @@ namespace CPPFAPIWrapper {
 		}
 	}
 
-	void * FAPILibrary::getModule() const {
-		TRACE_FNC("")
-			return mod.get();
+	void * FAPILibrary::getModule() const { TRACE_FNC("")
+		return mod.get();
 	}
 }

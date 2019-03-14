@@ -1,6 +1,7 @@
 #include "Property.h"
 
 #include "D2FPR.H"
+#include "D2FOB.H"
 #include "FormsObject.h"
 #include "FAPIContext.h"
 #include "FAPIWrapper.h"

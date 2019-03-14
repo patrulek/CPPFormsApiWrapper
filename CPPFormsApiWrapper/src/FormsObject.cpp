@@ -8,6 +8,7 @@
 #include "FAPIUtil.h"
 
 #include "D2FPR.H"
+#include "D2FOB.H"
 
 #include "Exceptions.h"
 #include "FAPILogger.h"
@@ -17,14 +18,18 @@
 namespace CPPFAPIWrapper {
 	using namespace std;
 
-	FormsObject::FormsObject(FAPIModule * _module, int _type_id, d2fob * _forms_obj, int _level)
-		: module(_module), parent(nullptr), type_id(_type_id), forms_obj(_forms_obj), level(_level) { TRACE_FNC("") }
+	FormsObject::FormsObject(FAPIModule * _module, int _type_id, void * _forms_obj, int _level)
+		: module(_module), parent(nullptr), type_id(_type_id), forms_obj(_forms_obj), level(_level) { TRACE_FNC("") 
+
+		auto deleter = [this](const void * data) { d2fobde_Destroy(this->getContext()->getContext(), const_cast<void *>(data)); };
+		forms_obj = unique_ptr<void, function<void(const void*)>>{ _forms_obj, deleter };
+	}
 
 	FormsObject::~FormsObject() { TRACE_FNC(""); }
 
 	bool FormsObject::isSubclassed() const { TRACE_FNC("")
 		auto ctx = getContext()->getContext();
-		return d2fobis_IsSubclassed(ctx, forms_obj) == D2FS_YES;
+		return d2fobis_IsSubclassed(ctx, forms_obj.get()) == D2FS_YES;
 	}
 
 	vector<FormsObject *> FormsObject::findSources() { TRACE_FNC("")// TODO when testing is done
@@ -32,10 +37,10 @@ namespace CPPFAPIWrapper {
 		vector<FormsObject *> sources{ this };
 
 		while (true) {  // TODO
-			auto f_obj = sources.back()->forms_obj;
+			auto & f_obj = sources.back()->forms_obj;
 			auto & source_props = sources.back()->properties;
 
-			if (d2fobis_IsSubclassed(ctx, f_obj) != D2FS_YES)
+			if (d2fobis_IsSubclassed(ctx, f_obj.get()) != D2FS_YES)
 				break;
 
 			string mod_name = source_props.find(D2FP_PAR_FLNAM) != source_props.end() ? source_props[D2FP_PAR_FLNAM]->getValue() : "";
@@ -201,8 +206,8 @@ namespace CPPFAPIWrapper {
 		return type_id;
 	}
 
-	d2fob * FormsObject::getFormsObj() const { TRACE_FNC("")
-		return forms_obj;
+	void * FormsObject::getFormsObj() const { TRACE_FNC("")
+		return forms_obj.get();
 	}
 
 	FAPIContext * FormsObject::getContext() const { TRACE_FNC("")

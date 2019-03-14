@@ -1,13 +1,13 @@
 #ifndef FORMSOBJECT_H
 #define FORMSOBJECT_H
 
-#include "D2FOB.H"
 #include "dllmain.h"
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include "Expected.h"
 
@@ -25,7 +25,7 @@ namespace CPPFAPIWrapper {
 		* \param _mod Pointer to OracleForms form object
 		* \param _level Hierarchy level of object
 		*/
-		CPPFAPIWRAPPER FormsObject(FAPIModule * _module, int _type_id, d2fob * _forms_obj, int _level);
+		CPPFAPIWRAPPER FormsObject(FAPIModule * _module, int _type_id, void * _forms_obj, int _level);
 		CPPFAPIWRAPPER ~FormsObject();
 
 		/** Marks property for setting its value
@@ -151,7 +151,7 @@ namespace CPPFAPIWrapper {
 		*
 		* \return OracleForms object pointer
 		*/
-		CPPFAPIWRAPPER d2fob * getFormsObj() const;
+		CPPFAPIWRAPPER void * getFormsObj() const;
 
 		/** Gets FAPIContext which module is assigned to.
 		*
@@ -192,7 +192,7 @@ namespace CPPFAPIWrapper {
 		FAPIModule * module;
 		FormsObject * parent;
 		int type_id;		 // internal forms api obj type id
-		d2fob * forms_obj;  // internal forms api obj
+		std::unique_ptr<void, std::function<void(const void*)>> forms_obj;  // internal forms api obj
 		int level;
 		std::unordered_map<int, std::vector<std::unique_ptr<FormsObject>>> children;
 		std::unordered_map<int, std::unique_ptr<Property>> properties;
