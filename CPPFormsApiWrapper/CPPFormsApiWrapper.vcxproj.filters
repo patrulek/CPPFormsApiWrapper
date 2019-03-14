@@ -189,9 +189,6 @@
     <ClInclude Include="include\FAPILogger.h">
       <Filter>Header Files\CPPFapiWrapper</Filter>
     </ClInclude>
-    <ClInclude Include="include\FAPIModule.h">
-      <Filter>Header Files\CPPFapiWrapper</Filter>
-    </ClInclude>
     <ClInclude Include="include\FAPIUtil.h">
       <Filter>Header Files\CPPFapiWrapper</Filter>
     </ClInclude>
@@ -237,6 +234,15 @@
     <ClInclude Include="include\easylogger-impl.h">
       <Filter>Header Files\EasyLogger</Filter>
     </ClInclude>
+    <ClInclude Include="include\FAPIForm.h">
+      <Filter>Header Files\CPPFapiWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FAPILibrary.h">
+      <Filter>Header Files\CPPFapiWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FAPIModule.h">
+      <Filter>Header Files\CPPFapiWrapper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -246,9 +252,6 @@
       <Filter>Source Files\CPPFapiWrapper</Filter>
     </ClCompile>
     <ClCompile Include="src\FAPILogger.cpp">
-      <Filter>Source Files\CPPFapiWrapper</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FAPIModule.cpp">
       <Filter>Source Files\CPPFapiWrapper</Filter>
     </ClCompile>
     <ClCompile Include="src\FAPIUtil.cpp">
@@ -265,6 +268,15 @@
     </ClCompile>
     <ClCompile Include="src\src\tz.cpp">
       <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FAPIForm.cpp">
+      <Filter>Source Files\CPPFapiWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FAPILibrary.cpp">
+      <Filter>Source Files\CPPFapiWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FAPIModule.cpp">
+      <Filter>Source Files\CPPFapiWrapper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

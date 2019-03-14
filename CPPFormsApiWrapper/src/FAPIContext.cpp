@@ -1,6 +1,7 @@
 #include "FAPIContext.h"
 
-#include "FAPIModule.h"
+#include "FAPIForm.h"
+#include "FAPILibrary.h"
 #include "FAPIWrapper.h"
 #include "FAPIUtil.h"
 #include <algorithm>
@@ -8,6 +9,9 @@
 #include "Expected.h"
 #include "Exceptions.h"
 #include "FAPILogger.h"
+
+#include "D2FLIB.H"
+#include "D2FFMD.H"
 
 namespace CPPFAPIWrapper {
 	using namespace std;
@@ -24,6 +28,8 @@ namespace CPPFAPIWrapper {
 		auto deleter = [](d2fctx * data) { if (data) d2fctxde_Destroy(data); };
 		ctx = unique_ptr<d2fctx, function<void(d2fctx *)>>{ ctx_, deleter };
 	}
+
+	FAPIContext::~FAPIContext() { TRACE_FNC(""); }
 
 	unordered_map<string, vector<string>> FAPIContext::getBuiltins() { TRACE_FNC("")
 		unordered_map<string, vector<string>> builtins;
@@ -51,7 +57,7 @@ namespace CPPFAPIWrapper {
 		return builtins;
 	}
 
-	void FAPIContext::loadSourceModules(const FAPIModule * _module, const bool _ignore_missing_libs, const bool _ignore_missing_sub, const bool _traverse) { TRACE_FNC(to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
+	void FAPIContext::loadSourceModules(const FAPIForm * _module, const bool _ignore_missing_libs, const bool _ignore_missing_sub, const bool _traverse) { TRACE_FNC(to_string(_ignore_missing_libs) + " | " + to_string(_ignore_missing_sub))
 		unordered_set<string> to_process = _module->getSourceModules();
 		unordered_set<string> processed = _module->getSourceModules();
 		processed.insert(_module->getName());
@@ -110,7 +116,7 @@ namespace CPPFAPIWrapper {
 			|| (!_ignore_missing_sub && status == D2FS_MISSINGSUBCLMOD))
 			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, _filepath, status }; // "operation failed", when trying to load, already loaded, module
 
-		auto module = make_unique<FAPIModule>(this, mod, _filepath);
+		auto module = make_unique<FAPIForm>(this, mod, _filepath);
 
 		if (_traverse) {
 			status = module->traverseObjects();
@@ -122,12 +128,43 @@ namespace CPPFAPIWrapper {
 		modules[toUpper(_filepath)] = move(module);
 	}
 
-	FAPIModule * FAPIContext::getModule(const string & _filepath) { TRACE_FNC(_filepath)
-		return Expected<FAPIModule>{ modules[toUpper(_filepath)].get() }.get();
+	void FAPIContext::loadLibrary(const std::string & _filepath) { TRACE_FNC(_filepath)
+		if (hasLibrary(_filepath))
+			throw FAPIException{ Reason::OTHER, __FILE__, __LINE__, _filepath };
+
+		if (!fileExists(_filepath))
+			throw FAPIException{ Reason::OTHER, __FILE__, __LINE__, _filepath };
+
+		d2flib * lib{ nullptr };
+		int status = d2flibld_Load(ctx.get(), &lib, stringToText(_filepath), FALSE);
+
+		if (status != D2FS_SUCCESS )
+			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, _filepath, status }; // "operation failed", when trying to load, already loaded, module
+
+		auto library = make_unique<FAPILibrary>(this, lib, _filepath);
+
+		status = library->traverseObjects();
+
+		if (status != D2FS_SUCCESS)
+			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status };
+
+		libs[toUpper(_filepath)] = move(library);
+	}
+
+	FAPIForm * FAPIContext::getModule(const string & _filepath) { TRACE_FNC(_filepath)
+		return Expected<FAPIForm>{ modules[toUpper(_filepath)].get() }.get();
+	}
+
+	FAPILibrary * FAPIContext::getLibrary(const string & _filepath) { TRACE_FNC(_filepath)
+		return Expected<FAPILibrary>{ libs[toUpper(_filepath)].get() }.get();
 	}
 
 	bool FAPIContext::hasModule(const string & _filepath) { TRACE_FNC(_filepath)
 		return modules.find(toUpper(_filepath)) != modules.end();
+	}
+
+	bool FAPIContext::hasLibrary(const string & _filepath) { TRACE_FNC(_filepath)
+		return libs.find(toUpper(_filepath)) != libs.end();
 	}
 
 	void FAPIContext::createModule(const string & _filepath) { TRACE_FNC(_filepath)
@@ -140,11 +177,15 @@ namespace CPPFAPIWrapper {
 		if (status != D2FS_SUCCESS)
 			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, name, status };
 
-		modules[toUpper(_filepath)] = make_unique<FAPIModule>(this, mod, _filepath);
+		modules[toUpper(_filepath)] = make_unique<FAPIForm>(this, mod, _filepath);
 	}
 
 	void FAPIContext::removeModule(const string & _filepath) { TRACE_FNC(_filepath)
 		modules.erase(toUpper(_filepath));
+	}
+
+	void FAPIContext::removeLibrary(const string & _filepath) { TRACE_FNC(_filepath)
+		libs.erase(toUpper(_filepath));
 	}
 
 	bool FAPIContext::connectContextToDB(const string & _connstring) { TRACE_FNC(_connstring)
@@ -188,8 +229,12 @@ namespace CPPFAPIWrapper {
 		return ctx.get();
 	}
 
-	unordered_map<string, unique_ptr<FAPIModule>>& FAPIContext::getModules() { TRACE_FNC("")
+	unordered_map<string, unique_ptr<FAPIForm>>& FAPIContext::getModules() { TRACE_FNC("")
 		return modules;
+	}
+
+	unordered_map<string, unique_ptr<FAPILibrary>>& FAPIContext::getLibraries() { TRACE_FNC("")
+		return libs;
 	}
 
 	string FAPIContext::getConnstring() const { TRACE_FNC("")

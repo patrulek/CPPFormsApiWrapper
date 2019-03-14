@@ -1,111 +1,26 @@
 #include "FAPIModule.h"
 
-#include <algorithm>
-#include <fstream>
-#include <regex>
-
-#include "Property.h"
-#include "FAPIWrapper.h"
 #include "FAPIContext.h"
+#include "FAPILogger.h"
+#include "Property.h"
 #include "FormsObject.h"
+
 #include "FAPIUtil.h"
 
-#include "d2ffmd.h"
-#include "d2fob.h"
 #include "d2fpr.h"
-#include "d2falb.h"
-
-#include "Exceptions.h"
-#include "FAPILogger.h"
 
 namespace CPPFAPIWrapper {
 	using namespace std;
 
-	FAPIModule::FAPIModule(FAPIContext * _ctx, d2ffmd * _mod, const string & _filepath)
-		: ctx(_ctx), filepath(_filepath) { TRACE_FNC(_filepath)
-		auto deleter = [this](const void * data) { d2ffmdde_Destroy(this->ctx->getContext(), const_cast<d2ffmd *>(data)); };
-		mod = unique_ptr<d2ffmd, function<void(const void*)>>{ _mod, deleter };
-	}
-
-	FAPIModule::~FAPIModule() { TRACE_FNC("") }
-
-	bool FAPIModule::hasObject(const int _type_id, const string & _name) const { TRACE_FNC(to_string(_type_id) + " | " + _name)
-		return root->hasObject(_type_id, _name);
-	}
-
-	FormsObject * FAPIModule::getRootObject(const int _type_id, const string & _name) const { TRACE_FNC(to_string(_type_id) + " | " + _name)
-		return root->getObject(_type_id, _name).get();
-	}
-
-	FormsObject * FAPIModule::getObject(const int _type_id, const string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
-		auto splits = splitString(_fullname, ".");
-		vector<FormsObject *> to_process{ root.get() };
-		string name{ *splits.end() };
-
-		for (const auto & split : splits) {
-			FAPILogger::debug(split);
-
-			vector<FormsObject *> new_process;
-
-			while (!to_process.empty()) {
-				auto curr{ to_process[0] }; to_process.erase(to_process.begin());
-				auto & children_types{ type_hierarchy[curr->getId()] };
-
-				for (const auto & type : children_types) {
-					try {
-						auto child = curr->getObject(type, split).get();
-
-						if (child->getId() == _type_id && child->getName() == name)
-							return child;
-						else
-							new_process.emplace_back(child);
-					} catch (exception & ex) { FAPILogger::warn(ex.what()); }
-				}
-			}
-
-			to_process.insert(to_process.end(), new_process.begin(), new_process.end());
-		}
-
-		throw FAPIException{ Reason::OBJECT_NOT_FOUND, __FILE__, __LINE__, to_string(_type_id) + " | " + _fullname };
-	}
-
-	vector<FormsObject *> FAPIModule::getObjects(const int _type_id) const { TRACE_FNC(to_string(_type_id))
-		return root->getObjects(_type_id);
-	}
-
-	vector<FormsObject *> FAPIModule::getAllObjects() const { TRACE_FNC("")
-		vector<FormsObject *> objects;
-		vector<FormsObject *> to_process{ root.get() };
-
-		while (!to_process.empty()) {
-			FormsObject * curr{ to_process[0] };
-			to_process.erase(to_process.begin());
-			objects.emplace_back(curr);
-			auto & children = curr->getChildren();
-
-			for (const auto & entry : children)
-				transform(entry.second.begin(), entry.second.end(), back_inserter(to_process), [](const auto & _child) { return _child.get(); });
-		}
-
-		return objects;
-	}
-
-	void FAPIModule::markObject(FormsObject * _forms_object) { TRACE_FNC("")
-		if (find(marked_objects.begin(), marked_objects.end(), _forms_object) == marked_objects.end())
-			marked_objects.emplace_back(_forms_object);
-	}
-
-	void FAPIModule::unmarkObject(FormsObject * _forms_object) { TRACE_FNC("")
-		auto idx = find(marked_objects.begin(), marked_objects.end(), _forms_object);
-
-		if (idx != marked_objects.end())
-			marked_objects.erase(idx);
-	}
+	FAPIModule::FAPIModule(FAPIContext * _ctx, const std::string & _filepath) 
+		: ctx(_ctx), filepath(_filepath)	{ TRACE_FNC(_filepath) }
+	FAPIModule::~FAPIModule() { TRACE_FNC(""); }
 
 	bool FAPIModule::hasInternalObject(const int _type_id, const string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
 		auto splits = splitString(_fullname, ".");
 		d2fob * obj{ nullptr };
 		unordered_map<d2fob *, vector<d2fob *>> objects{ { mod.get(), {} } };
+
 
 		for (const auto & split : splits) {
 			FAPILogger::debug(split);
@@ -147,206 +62,57 @@ namespace CPPFAPIWrapper {
 		return obj;
 	}
 
-	void FAPIModule::findGlobals() { TRACE_FNC("")
-		globals.clear();
-
-		auto triggers = getTriggers();
-		auto prog_units = getProgramUnits();
-		regex pattern{ "global.[A-Za-z0-9_!@#$%^&*()]+", regex_constants::icase };
-		smatch match;
-
-		for (const auto & trg : triggers) {
-			string code = trg->getProperties().at(D2FP_TRG_TXT)->getValue();
-			regex_search(code, match, pattern);
-			transform(match.begin(), match.end(), inserter(globals, globals.begin()), [](const auto & _val) { return _val.str().substr(7); }); // 7 = `global.` offset
-		}
-
-		for (const auto & pgu : prog_units) {
-			string code = pgu->getProperties().at(D2FP_PGU_TXT)->getValue();
-			regex_search(code, match, pattern);
-			transform(match.begin(), match.end(), inserter(globals, globals.begin()), [](const auto & _val) { return _val.str().substr(7); }); // 7 = `global.` offset
-		}
+	void FAPIModule::markObject(FormsObject * _forms_object) { TRACE_FNC("")
+		if (find(marked_objects.begin(), marked_objects.end(), _forms_object) == marked_objects.end())
+			marked_objects.emplace_back(_forms_object);
 	}
 
-	string FAPIModule::getFilepath() const { TRACE_FNC("")
-		return filepath;
+	void FAPIModule::unmarkObject(FormsObject * _forms_object) { TRACE_FNC("")
+		auto idx = find(marked_objects.begin(), marked_objects.end(), _forms_object);
+
+		if (idx != marked_objects.end())
+			marked_objects.erase(idx);
 	}
 
-	void FAPIModule::inheritAllProp() { TRACE_FNC("")
-		for (const auto & obj : getAllObjects())
-			obj->inheritAllProp();
+	bool FAPIModule::hasObject(const int _type_id, const string & _name) const { TRACE_FNC(to_string(_type_id) + " | " + _name)
+		return root->hasObject(_type_id, _name);
 	}
 
-	void FAPIModule::inheritAllPLSQL() { TRACE_FNC("")
-		for (const auto & obj : getAllObjects()) {
-			if (obj->getId() == D2FFO_TRIGGER)
-				obj->inheritProp(D2FP_TRG_TXT);
-			else if (obj->getId() == D2FFO_PROG_UNIT)
-				obj->inheritProp(D2FP_PGU_TXT);
-		}
+	FormsObject * FAPIModule::getRootObject(const int _type_id, const string & _name) const { TRACE_FNC(to_string(_type_id) + " | " + _name)
+		return root->getObject(_type_id, _name).get();
 	}
 
-	void FAPIModule::inheritPLSQL(const vector<string> & _units) { TRACE_FNC("")
-		for (const auto & str : _units) {
-			try {
-				const auto pgu = getObject(D2FFO_PROG_UNIT, str);
-				pgu->inheritProp(D2FP_PGU_TXT);
-			} catch (exception & ex) { FAPILogger::warn(ex.what()); }
+	FormsObject * FAPIModule::getObject(const int _type_id, const string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
+		auto splits = splitString(_fullname, ".");
+		vector<FormsObject *> to_process{ root.get() };
+		string name{ *splits.end() };
 
-			try {
-				const auto trg = getObject(D2FFO_TRIGGER, str);
-				trg->inheritProp(D2FP_TRG_TXT);
-			} catch (exception & ex) { FAPILogger::warn(ex.what()); }
-		}
-	}
+		for (const auto & split : splits) {
+			FAPILogger::debug(split);
 
-	void FAPIModule::inheritPLSQL(const vector<FormsObject *> & _units) { TRACE_FNC("")
-		for (const auto & obj : _units) {
-			if (obj->getId() == D2FFO_TRIGGER)
-				obj->inheritProp(D2FP_TRG_TXT);
-			else if (obj->getId() == D2FFO_PROG_UNIT)
-				obj->inheritProp(D2FP_PGU_TXT);
-		}
-	}
+			vector<FormsObject *> new_process;
 
-	string FAPIModule::createObjectReportFile(const string & _filepath) { TRACE_FNC(_filepath)
-		string out_file = (_filepath != "" ? _filepath.substr(0, _filepath.rfind(".")) : filepath.substr(0, filepath.rfind("."))) + ".txt";
-		string cmd = "ifcmp60.exe module=\"" + filepath + "\" output_file=\"" + out_file + "\" forms_doc=YES window_state=minimize"; // TODO
+			while (!to_process.empty()) {
+				auto curr{ to_process[0] }; to_process.erase(to_process.begin());
+				auto & children_types{ type_hierarchy[curr->getId()] };
 
-		if (ctx->getConnstring() != "")
-			cmd += " userid=" + ctx->getConnstring();
+				for (const auto & type : children_types) {
+					try {
+						auto child = curr->getObject(type, split).get();
 
-		FAPILogger::debug("out_file=" + out_file + " cmd=" + cmd);
-		system(cmd.c_str());
-
-		if (!fileExists(out_file))
-			throw FAPIException{ Reason::OTHER, __FILE__, __LINE__, filepath + "_" + out_file };
-
-		return out_file;
-	}
-
-	void FAPIModule::checkOverriden() { TRACE_FNC("")
-		for (const auto & fo : getAllObjects())
-			for (const auto & entry : fo->getProperties())
-				entry.second->checkState();
-	}
-
-	void FAPIModule::attachLib(const string & _lib_name) { TRACE_FNC(_lib_name)
-		if (hasObject(D2FFO_ATT_LIB, _lib_name)) {
-			FAPILogger::warn("Form already attach " + _lib_name);
-			return;
-		}
-
-		d2falb *ppd2falb{ nullptr };
-		int status = d2falbat_Attach(ctx->getContext(), mod.get(), &ppd2falb, FALSE, stringToText(_lib_name));
-
-		if (status != D2FS_SUCCESS)
-			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, _lib_name, status };
-
-		root->addChild(new FormsObject{ this, D2FFO_ATT_LIB, ppd2falb, 1 });
-	}
-
-	void FAPIModule::detachLib(const string & _lib_name) { TRACE_FNC(_lib_name)
-		Expected<FormsObject> exp_lib = root->getObject(D2FFO_ATT_LIB, _lib_name);
-		bool detached{ false };
-
-		while (exp_lib.isValid()) {
-			if (detached) {
-				FAPILogger::warn("There are more instances of " + _lib_name + " attached to form! Form needs to be saved before detaching another again");
-				saveModule();
+						if (child->getId() == _type_id && child->getName() == name)
+							return child;
+						else
+							new_process.emplace_back(child);
+					}
+					catch (exception & ex) { FAPILogger::warn(ex.what()); }
+				}
 			}
 
-			int status = d2falbdt_Detach(ctx->getContext(), exp_lib->getFormsObj());
-
-			if (status != D2FS_SUCCESS)
-				throw FAPIException(Reason::INTERNAL_ERROR, __FILE__, __LINE__, _lib_name, status);
-
-			detached = true;
-			root->removeChild(exp_lib.get());
-			exp_lib = root->getObject(D2FFO_ATT_LIB, _lib_name);
-		}
-	}
-
-	void FAPIModule::saveModule(const string & _path) { TRACE_FNC(_path)
-		string path { _path == "" ? filepath : _path };
-
-		FAPILogger::debug(path);
-
-		for (const auto & marked_obj : marked_objects) {
-			auto & marked_properties = marked_obj->getMarkedProperties();
-
-			for (const auto & marked_prop : marked_properties)
-				marked_obj->setProperty(marked_prop);
-
-			marked_properties.clear();
+			to_process.insert(to_process.end(), new_process.begin(), new_process.end());
 		}
 
-		marked_objects.clear();
-		int status = d2ffmdsv_Save(ctx->getContext(), mod.get(), stringToText(path), FALSE);
-
-		if (status != D2FS_SUCCESS)
-			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, path, status };
-	}
-
-	void FAPIModule::compileModule() { TRACE_FNC("")
-		int status = d2ffmdco_CompileObj(ctx->getContext(), mod.get());
-
-		if (status != D2FS_SUCCESS)
-			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status };
-	}
-
-	bool FAPIModule::isCompiling() noexcept { TRACE_FNC("")
-		try {
-			compileModule();
-			return true;
-		} catch (exception &) { return false; }
-	}
-
-	void FAPIModule::generateModule() { TRACE_FNC("")
-		int status = d2ffmdcf_CompileFile(ctx->getContext(), mod.get());
-
-		if (status != D2FS_SUCCESS)
-			throw FAPIException{ Reason::INTERNAL_ERROR, __FILE__, __LINE__, "", status };
-	}
-
-	vector<FormsObject *> FAPIModule::getAttachedLibraries() const { TRACE_FNC("")
-		return getObjects(D2FFO_ATT_LIB);
-	}
-
-	vector<FormsObject *> FAPIModule::getBlocks() const { TRACE_FNC("")
-		return getObjects(D2FFO_BLOCK);
-	}
-
-	vector<FormsObject *> FAPIModule::getFormTriggers() const { TRACE_FNC("")
-		return getObjects(D2FFO_TRIGGER);
-	}
-
-	vector<FormsObject *> FAPIModule::getTriggers() const { TRACE_FNC("")
-		auto triggers = getFormTriggers();
-
-		for (const auto & block : getBlocks()) {
-			const auto & blk_triggers = block->getObjects(D2FFO_TRIGGER);
-			copy(blk_triggers.begin(), blk_triggers.end(), back_inserter(triggers));
-
-			for (const auto & item : block->getObjects(D2FFO_ITEM)) {
-				const auto & itm_triggers = item->getObjects(D2FFO_TRIGGER);
-				copy(itm_triggers.begin(), itm_triggers.end(), back_inserter(triggers));
-			}
-		}
-
-		return triggers;
-	}
-
-	vector<FormsObject *> FAPIModule::getProgramUnits() const { TRACE_FNC("")
-		return getObjects(D2FFO_PROG_UNIT);
-	}
-
-	vector<FormsObject *> FAPIModule::getCanvases() const { TRACE_FNC("")
-		return getObjects(D2FFO_CANVAS);
-	}
-
-	vector<FormsObject *> FAPIModule::getParameters() const { TRACE_FNC("")
-		return getObjects(D2FFO_FORM_PARAM);
+		throw FAPIException{ Reason::OBJECT_NOT_FOUND, __FILE__, __LINE__, to_string(_type_id) + " | " + _fullname };
 	}
 
 	int FAPIModule::traverseObjects(d2fob * _obj, int _level, FormsObject * _forms_object) { TRACE_FNC("")
@@ -420,7 +186,8 @@ namespace CPPFAPIWrapper {
 					source_modules.insert(truncModuleName(property->getValue()));
 
 				properties.emplace(prop_num, move(property));
-			} else if (prop_type == D2FP_TYP_OBJECT)
+			}
+			else if (prop_type == D2FP_TYP_OBJECT)
 				object_properties.emplace_back(prop_num);
 		}
 
@@ -469,12 +236,56 @@ namespace CPPFAPIWrapper {
 		return D2FS_SUCCESS;
 	}
 
-	FAPIContext * FAPIModule::getContext() const { TRACE_FNC("")
-		return ctx;
+	vector<FormsObject *> FAPIModule::getObjects(const int _type_id) const { TRACE_FNC(to_string(_type_id))
+		return root->getObjects(_type_id);
 	}
 
-	d2ffmd * FAPIModule::getModule() const { TRACE_FNC("")
-		return mod.get();
+	vector<FormsObject *> FAPIModule::getAttachedLibraries() const { TRACE_FNC("")
+		return getObjects(D2FFO_ATT_LIB);
+	}
+
+	vector<FormsObject *> FAPIModule::getBlocks() const { TRACE_FNC("")
+		return getObjects(D2FFO_BLOCK);
+	}
+
+	vector<FormsObject *> FAPIModule::getFormTriggers() const { TRACE_FNC("")
+		return getObjects(D2FFO_TRIGGER);
+	}
+
+	vector<FormsObject *> FAPIModule::getTriggers() const { TRACE_FNC("")
+		auto triggers = getFormTriggers();
+
+		for (const auto & block : getBlocks()) {
+			const auto & blk_triggers = block->getObjects(D2FFO_TRIGGER);
+			copy(blk_triggers.begin(), blk_triggers.end(), back_inserter(triggers));
+
+			for (const auto & item : block->getObjects(D2FFO_ITEM)) {
+				const auto & itm_triggers = item->getObjects(D2FFO_TRIGGER);
+				copy(itm_triggers.begin(), itm_triggers.end(), back_inserter(triggers));
+			}
+		}
+
+		return triggers;
+	}
+
+	vector<FormsObject *> FAPIModule::getProgramUnits() const { TRACE_FNC("")
+		return getObjects(D2FFO_PROG_UNIT);
+	}
+
+	vector<FormsObject *> FAPIModule::getCanvases() const { TRACE_FNC("")
+		return getObjects(D2FFO_CANVAS);
+	}
+
+	vector<FormsObject *> FAPIModule::getParameters() const { TRACE_FNC("")
+		return getObjects(D2FFO_FORM_PARAM);
+	}
+
+	string FAPIModule::getFilepath() const { TRACE_FNC("")
+		return filepath;
+	}
+
+	FAPIContext * FAPIModule::getContext() const { TRACE_FNC("")
+		return ctx;
 	}
 
 	FormsObject * FAPIModule::getRoot() const { TRACE_FNC("")

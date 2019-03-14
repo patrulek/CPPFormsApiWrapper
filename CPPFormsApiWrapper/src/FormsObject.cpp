@@ -2,7 +2,8 @@
 
 #include "Property.h"
 #include "FAPIWrapper.h"
-#include "FAPIModule.h"
+#include "FAPIForm.h"
+#include "FAPILibrary.h"
 #include "FAPIContext.h"
 #include "FAPIUtil.h"
 
@@ -18,6 +19,8 @@ namespace CPPFAPIWrapper {
 
 	FormsObject::FormsObject(FAPIModule * _module, int _type_id, d2fob * _forms_obj, int _level)
 		: module(_module), parent(nullptr), type_id(_type_id), forms_obj(_forms_obj), level(_level) { TRACE_FNC("") }
+
+	FormsObject::~FormsObject() { TRACE_FNC(""); }
 
 	bool FormsObject::isSubclassed() const { TRACE_FNC("")
 		auto ctx = getContext()->getContext();
@@ -205,6 +208,7 @@ namespace CPPFAPIWrapper {
 	FAPIContext * FormsObject::getContext() const { TRACE_FNC("")
 		return module->getContext();
 	}
+
 	FAPIModule * FormsObject::getModule() const { TRACE_FNC("")
 		return module;
 	}

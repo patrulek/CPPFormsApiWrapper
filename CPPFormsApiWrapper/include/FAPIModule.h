@@ -1,14 +1,12 @@
-#ifndef FAPIMODULE_H
-#define FAPIMODULE_H
+#pragma once
 
-#include "D2FFMD.H"
-#include "dllmain.h"
-
-#include <string>
-#include <unordered_set>
-#include <vector>
 #include <memory>
+#include <unordered_set>
 #include <functional>
+
+#include "dllmain.h"
+#include "D2FOB.H"
+
 
 namespace CPPFAPIWrapper {
 	class FAPIContext;
@@ -16,232 +14,177 @@ namespace CPPFAPIWrapper {
 
 	class FAPIModule
 	{
-	public:
-		/** Creates FAPIModule object. Used by FAPIContext, shouldn' be called directly.
-		*
-		* \param _ctx Pointer to FAPIContext.
-		* \param _mod Pointer to OracleForms form object
-		* \param _filepath Path to .fmb module
-		*/
-		CPPFAPIWRAPPER FAPIModule(FAPIContext * _ctx, d2ffmd * _mod, const std::string & _filepath);
-		CPPFAPIWRAPPER ~FAPIModule();
+		public:
+			CPPFAPIWRAPPER virtual ~FAPIModule();
 
-		FAPIModule() = delete;
-		FAPIModule(const FAPIModule & _module) = delete;
-		FAPIModule(FAPIModule && _module) = delete;
+			/** Recurrently traverse .fmb/.pll and load all relevant objects and its properties.
+			*
+			* \param _obj Pointer to OracleForms object
+			* \param _level Level of object hierarchy
+			* \param _forms_object Parent of current object
+			* \return OracleForms status of operation
+			*/
+			CPPFAPIWRAPPER int traverseObjects(d2fob * _obj = nullptr, int _level = 0, FormsObject * _forms_object = nullptr);
 
-		FAPIModule & operator=(const FAPIModule & _module) = delete;
-		FAPIModule & operator=(FAPIModule && _module) = delete;
+			/** Gets filepath to module
+			*
+			* \return Filepath to module
+			*/
+			CPPFAPIWRAPPER std::string getFilepath() const;
 
-		/** Inherits all properties from source modules */
-		CPPFAPIWRAPPER void inheritAllProp();
+			/** Gets FAPIContext pointer which module is attached to
+			*
+			* \return FAPIContext pointer.
+			*/
+			CPPFAPIWRAPPER FAPIContext * getContext() const;
 
-		/** Inherits text property for all PLSQL objects (triggers/program units) */
-		CPPFAPIWRAPPER void inheritAllPLSQL();
+			/** Gets root object of module
+			*
+			* \return Pointer to FormsObject root object.
+			*/
+			CPPFAPIWRAPPER FormsObject * getRoot() const;
 
-		/** Inherits text property for a given PLSQL objects
-		*
-		* \param _units Collection of objects' fullnames (ex. MY_PROGRAM_UNIT, BLOCK.WHEN-NEW-BLOCK-INSTANCE)
-		*/
-		CPPFAPIWRAPPER void inheritPLSQL(const std::vector<std::string> & _units);
+			/** Gets name of a module
+			*
+			* \return Name of module.
+			*/
+			CPPFAPIWRAPPER std::string getName() const;
 
-		/** Inherits text property for a given PLSQL objects
-		*
-		* \param _units Collection of FormsObject pointers
-		*/
-		CPPFAPIWRAPPER void inheritPLSQL(const std::vector<FormsObject *> & _units);
+			/** Gets names of source modules, which current module inherits from
+			*
+			* \return Set of source module names.
+			*/
+			CPPFAPIWRAPPER std::unordered_set<std::string> getSourceModules() const;
 
-		/** Creates object report file for a given module
-		*
-		* \param _filepath Location of output file. If not provided, will reside in same folder as module
-		* \return Returns output filepath.
-		*/
-		CPPFAPIWRAPPER std::string createObjectReportFile(const std::string & _filepath = "");
+			/** Checks if contains internal object
+			* \param _type_id OracleForms object type id
+			* \param _fullname Full name of object (eg. BLOCK.ITEM.TRIGGER, PRG_UNIT ...)
+			* \return True if module contains internal object, false otherwise
+			*/
+			CPPFAPIWRAPPER bool hasInternalObject(const int _type_id, const std::string & _fullname) const;
 
-		/** Attach PLSQL library to a module
-		*
-		* \param _lib_name Library name
-		*/
-		CPPFAPIWRAPPER void attachLib(const std::string & _lib_name);
+			/** Checks if contains a given object.
+			*
+			* \param _type_id OracleForms object type id
+			* \param _name Name of object
+			* \return True if module has object, false otherwise.
+			*/
+			CPPFAPIWRAPPER bool hasObject(const int _type_id, const std::string & _name) const;
 
-		/** Detach PLSQL library to a module
-		*
-		* \param _lib_name Library name
-		*/
-		CPPFAPIWRAPPER void detachLib(const std::string & _lib_name);
+			/** Gets given object from module
+			*
+			* \param _type_id OracleForms object type id
+			* \param _fullname Full name of object (ex. for item object you could try to find "MY_BLOCK.MY_ITEM")
+			* \return Pointer to FormsObject if exists, otherwise throws exception.
+			*/
+			CPPFAPIWRAPPER FormsObject * getObject(const int _type_id, const std::string & _fullname) const;
 
-		/** Saves .fmb module to a disk.
-		*
-		* \param _path If not provided, module will be saved to a location pointed by filepath object member
-		*/
-		CPPFAPIWRAPPER void saveModule(const std::string & _path = "");
+			/** Gets objects which lies directly under root object in hierarchy
+			*
+			* \param _type_id OracleForms object type id
+			* \return Collection of FormsObject pointers
+			*/
+			CPPFAPIWRAPPER std::vector<FormsObject *> getObjects(const int _type_id) const;
 
-		/** Compiles all PLSQL objects in .fmb module*/
-		CPPFAPIWRAPPER void compileModule();
+			/** Gets given object which lies directly under root object in hierarchy
+			*
+			* \param _type_id OracleForms object type id
+			* \param _name Name of object.
+			* \return Pointer to FormsObject
+			*/
+			CPPFAPIWRAPPER FormsObject * getRootObject(const int _type_id, const std::string & _name) const;
+			// Convenient functions
+			/** Gets all AttachedLibrary objects
+			*
+			* \return Collection of FormsObject pointers to AttachedLibrary
+			*/
+			CPPFAPIWRAPPER std::vector<FormsObject *> getAttachedLibraries() const;
 
-		/** Check if module is compiling correctly */
-		CPPFAPIWRAPPER bool isCompiling() noexcept;
+			/** Gets all Block objects
+			*
+			* \return Collection of FormsObject pointers to Block
+			*/
+			CPPFAPIWRAPPER std::vector<FormsObject *> getBlocks() const;
 
-		/** Generates .fmx file in same folder as module */
-		CPPFAPIWRAPPER void generateModule();
+			/** Gets all Trigger objects, which lies directly under root object
+			*
+			* \return Collection of FormsObject pointers to form Trigger.
+			*/
+			CPPFAPIWRAPPER std::vector<FormsObject *> getFormTriggers() const;
 
-		/** Checks properties for broken inheritance. Search for and loads source modules if needed */
-		CPPFAPIWRAPPER void checkOverriden();
+			/** Gets all Trigger objects, at all hierarchy levels
+			*
+			* \return Collection of FormsObject pointers to Trigger.
+			*/
+			CPPFAPIWRAPPER std::vector<FormsObject *> getTriggers() const;
 
-		/** Recurrently traverse .fmb module and load all relevant objects and its properties.
-		*
-		* \param _obj Pointer to OracleForms object
-		* \param _level Level of object hierarchy
-		* \param _forms_object Parent of current object
-		* \return OracleForms status of operation
-		*/
-		CPPFAPIWRAPPER int traverseObjects(d2fob * _obj = nullptr, int _level = 0, FormsObject * _forms_object = nullptr);
+			/** Gets all ProgramUnit objects
+			*
+			* \return Collection of FormsObject poiners to ProgramUnit.
+			*/
+			CPPFAPIWRAPPER std::vector<FormsObject *> getProgramUnits() const;
 
-		/** Mark object for setting its properties' values
-		*
-		* \param _forms_object Object to mark
-		*/
-		CPPFAPIWRAPPER void markObject(FormsObject * _forms_object);
+			/** Gets all Canvas objects
+			*
+			* \return Collection of FormsObject pointers to Canvas.
+			*/
+			CPPFAPIWRAPPER std::vector<FormsObject *> getCanvases() const;
 
-		/** Unmark object for setting its properties' values
-		*
-		* \param _forms_object Object to unmark
-		*/
-		CPPFAPIWRAPPER void unmarkObject(FormsObject * _forms_object);
+			/** Gets all FormParameter objects.
+			*
+			* \return Collection of FormsObject pointers to FormParameter.
+			*/
+			CPPFAPIWRAPPER std::vector<FormsObject *> getParameters() const;
 
-		/** Checks if contains internal object
-		* \param _type_id OracleForms object type id
-		* \param _fullname Full name of object (eg. BLOCK.ITEM.TRIGGER, PRG_UNIT ...)
-		* \return True if module contains internal object, false otherwise
-		*/
-		CPPFAPIWRAPPER bool hasInternalObject(const int _type_id, const std::string & _fullname) const;
+			/** Mark object for setting its properties' values
+			*
+			* \param _forms_object Object to mark
+			*/
+			CPPFAPIWRAPPER void markObject(FormsObject * _forms_object);
 
-		/** Checks if contains a given object.
-		*
-		* \param _type_id OracleForms object type id
-		* \param _name Name of object
-		* \return True if module has object, false otherwise.
-		*/
-		CPPFAPIWRAPPER bool hasObject(const int _type_id, const std::string & _name) const;
+			/** Unmark object for setting its properties' values
+			*
+			* \param _forms_object Object to unmark
+			*/
+			CPPFAPIWRAPPER void unmarkObject(FormsObject * _forms_object);
 
-		/** Gets given object from module
-		*
-		* \param _type_id OracleForms object type id
-		* \param _fullname Full name of object (ex. for item object you could try to find "MY_BLOCK.MY_ITEM")
-		* \return Pointer to FormsObject if exists, otherwise throws exception.
-		*/
-		CPPFAPIWRAPPER FormsObject * getObject(const int _type_id, const std::string & _fullname) const;
+			/** Creates object report file for a given Library
+			*
+			* \param _filepath Location of output file. If not provided, will reside in same folder as Library
+			* \return Returns output filepath.
+			*/
+			CPPFAPIWRAPPER virtual std::string createObjectReportFile(const std::string & _filepath = "") = 0;
 
-		/** Gets given object which lies directly under root object in hierarchy
-		*
-		* \param _type_id OracleForms object type id
-		* \param _name Name of object.
-		* \return Pointer to FormsObject
-		*/
-		CPPFAPIWRAPPER FormsObject * getRootObject(const int _type_id, const std::string & _name) const;
+			/** Finds all global variables from all program units */
+			CPPFAPIWRAPPER virtual void findGlobals() = 0;
 
-		/** Gets objects which lies directly under root object in hierarchy
-		*
-		* \param _type_id OracleForms object type id
-		* \return Collection of FormsObject pointers
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getObjects(const int _type_id) const;
+			/** Gets pointer to OracleForms object
+			*
+			* \return Pointer to OracleForms object
+			*/
+			CPPFAPIWRAPPER virtual void * getModule() const = 0;
 
-		/** Gets all objects from all hierarchy levels
-		*
-		* \return Collection of FormsObject pointers
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getAllObjects() const;
+			/** Gets all library's program units
+			*
+			* \return Collection of FormsObject pointers
+			*/
+			CPPFAPIWRAPPER virtual std::vector<FormsObject *> getAllObjects() const = 0;
 
-		// Convenient functions
-		/** Gets all AttachedLibrary objects
-		*
-		* \return Collection of FormsObject pointers to AttachedLibrary
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getAttachedLibraries() const;
+		protected:
+			CPPFAPIWRAPPER FAPIModule(FAPIContext * _ctx, const std::string & _filepath);
+			FAPIModule() = delete;
+			FAPIModule(FAPIModule && _Library) = delete;
+			FAPIModule & operator=(FAPIModule && _Library) = delete;
+			FAPIModule(const FAPIModule & _Library) = delete;
+			FAPIModule & operator=(const FAPIModule & _Library) = delete;
 
-		/** Gets all Block objects
-		*
-		* \return Collection of FormsObject pointers to Block
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getBlocks() const;
-
-		/** Gets all Trigger objects, which lies directly under root object
-		*
-		* \return Collection of FormsObject pointers to form Trigger.
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getFormTriggers() const;
-
-		/** Gets all Trigger objects, at all hierarchy levels
-		*
-		* \return Collection of FormsObject pointers to Trigger.
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getTriggers() const;
-
-		/** Gets all ProgramUnit objects
-		*
-		* \return Collection of FormsObject poiners to ProgramUnit.
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getProgramUnits() const;
-
-		/** Gets all Canvas objects
-		*
-		* \return Collection of FormsObject pointers to Canvas.
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getCanvases() const;
-
-		/** Gets all FormParameter objects.
-		*
-		* \return Collection of FormsObject pointers to FormParameter.
-		*/
-		CPPFAPIWRAPPER std::vector<FormsObject *> getParameters() const;
-
-		/** Finds all global variables from all triggers and program units */
-		CPPFAPIWRAPPER void findGlobals();
-
-		/** Gets filepath to module
-		*
-		* \return Filepath to module
-		*/
-		CPPFAPIWRAPPER std::string getFilepath() const;
-
-		/** Gets FAPIContext pointer which module is attached to
-		*
-		* \return FAPIContext pointer.
-		*/
-		CPPFAPIWRAPPER FAPIContext * getContext() const;
-
-		/** Gets pointer to OracleForms object
-		*
-		* \return Pointer to OracleForms object
-		*/
-		CPPFAPIWRAPPER d2ffmd * getModule() const;
-
-		/** Gets root object of module
-		*
-		* \return Pointer to FormsObject root object.
-		*/
-		CPPFAPIWRAPPER FormsObject * getRoot() const;
-
-		/** Gets name of a module
-		*
-		* \return Name of module.
-		*/
-		CPPFAPIWRAPPER std::string getName() const;
-
-		/** Gets names of source modules, which current module inherits from
-		*
-		* \return Set of source module names.
-		*/
-		CPPFAPIWRAPPER std::unordered_set<std::string> getSourceModules() const;
-	private:
-		FAPIContext * ctx;
-		std::string filepath;
-		std::unique_ptr<d2ffmd, std::function<void(const void*)>> mod;
-		std::unique_ptr<FormsObject> root;
-		std::vector<FormsObject *> marked_objects;
-		std::unordered_set<std::string> source_modules;
-		std::unordered_set<std::string> globals;
-	};
+			FAPIContext * ctx;
+			std::string filepath;
+			std::unique_ptr<FormsObject> root;
+			std::unordered_set<std::string> globals;
+			std::unique_ptr<void, std::function<void(const void*)>> mod;
+			std::unordered_set<std::string> source_modules;
+			std::vector<FormsObject *> marked_objects;
+		};
 }
-#endif // FAPIMODULE_H
+

@@ -265,7 +265,9 @@
     <ClInclude Include="include\Exceptions.h" />
     <ClInclude Include="include\Expected.h" />
     <ClInclude Include="include\FAPIContext.h" />
+    <ClInclude Include="include\FAPILibrary.h" />
     <ClInclude Include="include\FAPILogger.h" />
+    <ClInclude Include="include\FAPIForm.h" />
     <ClInclude Include="include\FAPIModule.h" />
     <ClInclude Include="include\FAPIUtil.h" />
     <ClInclude Include="include\FAPIWrapper.h" />
@@ -276,7 +278,9 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="src\FAPIContext.cpp" />
+    <ClCompile Include="src\FAPILibrary.cpp" />
     <ClCompile Include="src\FAPILogger.cpp" />
+    <ClCompile Include="src\FAPIForm.cpp" />
     <ClCompile Include="src\FAPIModule.cpp" />
     <ClCompile Include="src\FAPIUtil.cpp" />
     <ClCompile Include="src\FAPIWrapper.cpp" />

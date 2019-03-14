@@ -26,6 +26,7 @@ namespace CPPFAPIWrapper {
 		* \param _level Hierarchy level of object
 		*/
 		CPPFAPIWRAPPER FormsObject(FAPIModule * _module, int _type_id, d2fob * _forms_obj, int _level);
+		CPPFAPIWRAPPER ~FormsObject();
 
 		/** Marks property for setting its value
 		*

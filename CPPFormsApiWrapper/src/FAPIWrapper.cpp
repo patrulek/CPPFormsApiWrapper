@@ -3,7 +3,6 @@
 #include "d2fctx.h"
 
 #include "FAPIContext.h"
-#include "FAPIModule.h"
 #include "Exceptions.h"
 
 #include <algorithm>

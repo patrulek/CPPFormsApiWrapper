@@ -11,19 +11,27 @@
 #include <unordered_map>
 
 namespace CPPFAPIWrapper {
-	class FAPIModule;
+	class FAPIForm;
+	class FAPILibrary;
 
 	class FAPIContext
 	{
 	public:
 		/** Creates FAPIContext object */
 		CPPFAPIWRAPPER FAPIContext();
+		CPPFAPIWRAPPER ~FAPIContext();
 
 		/** Gets Oracle Forms built-ins program units
 		*
 		* \return Builtins program units sorted by package names
 		*/
 		CPPFAPIWRAPPER std::unordered_map<std::string, std::vector<std::string>> getBuiltins();
+
+		/** Loads OracleForms .pll library and binds it with current context.
+		*
+		* \param _filepath Path to .pll file
+		*/
+		CPPFAPIWRAPPER void loadLibrary(const std::string & _filepath);
 
 		/** Loads OracleForms module and binds it with current context. Throws an exception when there
 		* are missing libs (.pll) or cant resolve inheritance and ignore parameters are set to false.
@@ -42,7 +50,7 @@ namespace CPPFAPIWrapper {
 		* \param _ignore_missing_libs If True, all modules will be loaded regardless of missing PLSQL libraries (.pll)
 		* \param _ignore_missing_sub If True, all modules will be loaded regardless of missing subobjects
 		*/
-		CPPFAPIWRAPPER void loadSourceModules(const FAPIModule * _module, const bool _ignore_missing_libs = false, const bool _ignore_missing_sub = false, const bool _traverse = true);
+		CPPFAPIWRAPPER void loadSourceModules(const FAPIForm * _module, const bool _ignore_missing_libs = false, const bool _ignore_missing_sub = false, const bool _traverse = true);
 
 		/** Combination of functions: loadModule and loadSourceModules. After loading all modules
 		* properties will be checked for broken inheritance of a module pointed by _filepath param.
@@ -65,7 +73,7 @@ namespace CPPFAPIWrapper {
 		* \param _filepath Path to .fmb file
 		* \return Pointer to FAPIModule object if exists, else throws an exception.
 		*/
-		CPPFAPIWRAPPER FAPIModule * getModule(const std::string & _filepath);
+		CPPFAPIWRAPPER FAPIForm * getModule(const std::string & _filepath);
 
 		/** Checks if context has attached module pointed by a _filepath param.
 		*
@@ -79,6 +87,26 @@ namespace CPPFAPIWrapper {
 		* \param _filepath Path to .fmb file
 		*/
 		CPPFAPIWRAPPER void removeModule(const std::string & _filepath);
+
+		/** Gets library by a given key, which is path to the file
+		*
+		* \param _filepath Path to .pll file
+		* \return Pointer to FAPILibrary object if exists, else throws an exception.
+		*/
+		CPPFAPIWRAPPER FAPILibrary * getLibrary(const std::string & _filepath);
+
+		/** Checks if context has attached library pointed by a _filepath param.
+		*
+		* \param _filepath Path to .pll file
+		* \return True if context already loaded a library given by a _filepath param.
+		*/
+		CPPFAPIWRAPPER bool hasLibrary(const std::string & _filepath);
+
+		/** Removes library from context
+		*
+		* \param _filepath Path to .pll file
+		*/
+		CPPFAPIWRAPPER void removeLibrary(const std::string & _filepath);
 
 		/** Connects context with a database.
 		*
@@ -109,7 +137,13 @@ namespace CPPFAPIWrapper {
 		*
 		* \return Map of modules, where key is path to .fmb file.
 		*/
-		CPPFAPIWRAPPER std::unordered_map<std::string, std::unique_ptr<FAPIModule>> & getModules();
+		CPPFAPIWRAPPER std::unordered_map<std::string, std::unique_ptr<FAPIForm>> & getModules();
+
+		/** Gets referenced map of context's libraries
+		*
+		* \return Map of modules, where key is path to .pll file.
+		*/
+		CPPFAPIWRAPPER std::unordered_map<std::string, std::unique_ptr<FAPILibrary>> & getLibraries();
 
 		/** Gets string which were used for connecting to database
 		*
@@ -118,7 +152,8 @@ namespace CPPFAPIWrapper {
 		CPPFAPIWRAPPER std::string getConnstring() const;
 	private:
 		std::unique_ptr<d2fctx, std::function<void(d2fctx *)>> ctx;
-		std::unordered_map<std::string, std::unique_ptr<FAPIModule>> modules;
+		std::unordered_map<std::string, std::unique_ptr<FAPIForm>> modules;
+		std::unordered_map<std::string, std::unique_ptr<FAPILibrary>> libs;
 		std::string connstring;
 		d2fctxa attr;
 		bool is_connected;
