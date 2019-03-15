@@ -4,3 +4,8 @@
 /CPPFormsApiWrapper/Release
 /.vs
 /Tester
+/CPPFormsApiWrapperTest/Debug
+/CPPFormsApiWrapperTest/Release
+/packages
+/CPPFormsApiWrapper_solution_suppressions.cfg
+/CPPFormsApiWrapper/CPPFormsApiWrapper_project_suppressions.cfg

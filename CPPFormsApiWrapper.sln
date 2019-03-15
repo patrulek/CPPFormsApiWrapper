@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CPPFormsApiWrapper", "CPPFo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tester", "Tester\Tester.vcxproj", "{6A9EE0B9-6E41-49A8-8F29-8B9D9B69BD5F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CPPFormsApiWrapperTest", "CPPFormsApiWrapperTest\CPPFormsApiWrapperTest.vcxproj", "{9B409E36-5596-450B-914B-AFD69BEBBFFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{6A9EE0B9-6E41-49A8-8F29-8B9D9B69BD5F}.Release|x64.Build.0 = Release|x64
 		{6A9EE0B9-6E41-49A8-8F29-8B9D9B69BD5F}.Release|x86.ActiveCfg = Release|Win32
 		{6A9EE0B9-6E41-49A8-8F29-8B9D9B69BD5F}.Release|x86.Build.0 = Release|Win32
+		{9B409E36-5596-450B-914B-AFD69BEBBFFC}.Debug|x64.ActiveCfg = Debug|x64
+		{9B409E36-5596-450B-914B-AFD69BEBBFFC}.Debug|x64.Build.0 = Debug|x64
+		{9B409E36-5596-450B-914B-AFD69BEBBFFC}.Debug|x86.ActiveCfg = Debug|Win32
+		{9B409E36-5596-450B-914B-AFD69BEBBFFC}.Debug|x86.Build.0 = Debug|Win32
+		{9B409E36-5596-450B-914B-AFD69BEBBFFC}.Release|x64.ActiveCfg = Release|x64
+		{9B409E36-5596-450B-914B-AFD69BEBBFFC}.Release|x64.Build.0 = Release|x64
+		{9B409E36-5596-450B-914B-AFD69BEBBFFC}.Release|x86.ActiveCfg = Release|Win32
+		{9B409E36-5596-450B-914B-AFD69BEBBFFC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
