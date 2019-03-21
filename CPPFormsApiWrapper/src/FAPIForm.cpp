@@ -56,13 +56,13 @@ namespace CPPFAPIWrapper {
 		for (const auto & trg : triggers) {
 			string code = trg->getProperties().at(D2FP_TRG_TXT)->getValue();
 			regex_search(code, match, pattern);
-			transform(match.begin(), match.end(), inserter(globals, globals.begin()), [](const auto & _val) { return _val.str().substr(7); }); // 7 = `global.` offset
+			transform(match.begin(), match.end(), inserter(globals, globals.begin()), [](const auto & _val) { return _val.str().substr(GLOBAL_OFFSET); });
 		}
 
 		for (const auto & pgu : prog_units) {
 			string code = pgu->getProperties().at(D2FP_PGU_TXT)->getValue();
 			regex_search(code, match, pattern);
-			transform(match.begin(), match.end(), inserter(globals, globals.begin()), [](const auto & _val) { return _val.str().substr(7); }); // 7 = `global.` offset
+			transform(match.begin(), match.end(), inserter(globals, globals.begin()), [](const auto & _val) { return _val.str().substr(GLOBAL_OFFSET); });
 		}
 	}
 

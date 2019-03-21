@@ -78,11 +78,7 @@ namespace CPPFAPIWrapper {
 		return root->hasObject(_type_id, _name);
 	}
 
-	FormsObject * FAPIModule::getRootObject(const int _type_id, const string & _name) const { TRACE_FNC(to_string(_type_id) + " | " + _name)
-		return root->getObject(_type_id, _name).get();
-	}
-
-	FormsObject * FAPIModule::getObject(const int _type_id, const string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
+	Expected<FormsObject> FAPIModule::getObject(const int _type_id, const string & _fullname) const { TRACE_FNC(to_string(_type_id) + " | " + _fullname)
 		auto splits = splitString(_fullname, ".");
 		vector<FormsObject *> to_process{ root.get() };
 		string name{ *splits.end() };
@@ -101,7 +97,7 @@ namespace CPPFAPIWrapper {
 						auto child = curr->getObject(type, split).get();
 
 						if (child->getId() == _type_id && child->getName() == name)
-							return child;
+							return Expected<FormsObject>(child);
 						else
 							new_process.emplace_back(child);
 					}
@@ -112,7 +108,7 @@ namespace CPPFAPIWrapper {
 			to_process.insert(to_process.end(), new_process.begin(), new_process.end());
 		}
 
-		throw FAPIException{ Reason::OBJECT_NOT_FOUND, __FILE__, __LINE__, to_string(_type_id) + " | " + _fullname };
+		return Expected<FormsObject>(nullptr);
 	}
 
 	int FAPIModule::traverseObjects(d2fob * _obj, int _level, FormsObject * _forms_object) { TRACE_FNC("")
@@ -177,17 +173,16 @@ namespace CPPFAPIWrapper {
 				continue;
 
 			int prop_type = d2fprgt_GetType(ctx, prop_num);
-			auto & properties = fo->getProperties();
 
-			if (prop_type == D2FP_TYP_BOOLEAN || prop_type == D2FP_TYP_NUMBER || prop_type == D2FP_TYP_TEXT) {
+			if (isValueProperty(ctx, prop_num)) {
 				auto property = make_unique<Property>(fo, prop_num, prop_type);
 
 				if (prop_num == D2FP_PAR_FLNAM && property->getValue() != "")
 					source_modules.insert(truncModuleName(property->getValue()));
 
-				properties.emplace(prop_num, move(property));
+				fo->getProperties().emplace(prop_num, move(property));
 			}
-			else if (prop_type == D2FP_TYP_OBJECT)
+			else
 				object_properties.emplace_back(prop_num);
 		}
 

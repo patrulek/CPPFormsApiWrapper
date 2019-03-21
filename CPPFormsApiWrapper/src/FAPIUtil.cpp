@@ -7,6 +7,8 @@
 #include <windows.h>
 #include "Exceptions.h"
 
+#include "D2FPR.H"
+
 #include "FAPILogger.h"
 
 namespace CPPFAPIWrapper {
@@ -121,5 +123,11 @@ namespace CPPFAPIWrapper {
 	vector<string> getFMBPaths() { TRACE_FNC("")
 		string paths = readRegistryKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\ORACLE", "FORMS60_PATH");
 		return splitString(paths);
+	}
+
+	bool isValueProperty(d2fctx * const _ctx, const int _prop_id) {
+		int prop_type = d2fprgt_GetType(_ctx, _prop_id);
+
+		return prop_type == D2FP_TYP_TEXT || prop_type == D2FP_TYP_NUMBER || prop_type == D2FP_TYP_BOOLEAN;
 	}
 }

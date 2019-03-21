@@ -54,8 +54,8 @@ namespace CPPFAPIWrapper {
 				if (name != "" && typ != D2FFO_ANY) {
 					auto new_source = module->getObject(typ, name);
 
-					if (new_source)
-						sources.emplace_back(new_source);
+					if (new_source.isValid())
+						sources.emplace_back(new_source.get());
 				} else
 					break; // TODO ??
 			} else /* other module */ {
@@ -72,17 +72,17 @@ namespace CPPFAPIWrapper {
 				int typ1 = stoi(source_props.find(D2FP_PAR_SL1OBJ_TYP) != source_props.end() ? source_props[D2FP_PAR_SL1OBJ_TYP]->getValue() : "0");
 
 				if (name != "" && typ != D2FFO_ANY) {
-					auto new_source = module_->getRootObject(typ, name);
+					auto new_source = module_->getObject(typ, name);
 
 					if (name1 != "" && typ1 != D2FFO_ANY) {
-						new_source = new_source->getObject(typ1, name1).get();
+						new_source = new_source->getObject(typ1, name1);
 
 						if (name2 != "" && typ2 != D2FFO_ANY)
-							new_source = new_source->getObject(typ2, name2).get();
+							new_source = new_source->getObject(typ2, name2);
 					}
 
-					if (new_source)
-						sources.emplace_back(new_source);
+					if (new_source.isValid())
+						sources.emplace_back(new_source.get());
 				}
 			}
 		}

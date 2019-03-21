@@ -80,7 +80,6 @@ namespace CPPFAPIWrapper {
 		auto ctx = parent->getContext()->getContext();
 		auto obj = parent->getFormsObj();
 
-		int prop_type = d2fprgt_GetType(ctx, prop_id);
 		string value_;
 
 		if (prop_type == D2FP_TYP_BOOLEAN) {
@@ -108,7 +107,6 @@ namespace CPPFAPIWrapper {
 		auto ctx = parent->getContext()->getContext();
 		auto obj = parent->getFormsObj();
 
-		int prop_type = d2fprgt_GetType(ctx, prop_id);
 		int status{ D2FS_SUCCESS };
 
 		if (prop_type == D2FP_TYP_BOOLEAN)

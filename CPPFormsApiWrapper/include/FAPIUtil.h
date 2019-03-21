@@ -6,9 +6,13 @@
 #include "ORATYPES.H"
 #include "dllmain.h"
 
+#include "D2FCTX.H"
+
 #include "easylogger.h"
 
 namespace CPPFAPIWrapper {
+
+	CPPFAPIWRAPPER constexpr int GLOBAL_OFFSET = 7;
 
 	/** Returns uppercase string
 	*
@@ -80,6 +84,12 @@ namespace CPPFAPIWrapper {
 	* \return LogLevel value.
 	*/
 	CPPFAPIWRAPPER easylogger::LogLevel levelFromStr(const std::string & _str);
+
+	/** Check if property is TEXT/NUMBER/BOOLEAN type
+	*
+	* \return True if value is a TEXT/NUMBER/BOOLEAN type, false otherwise
+	*/
+	CPPFAPIWRAPPER bool isValueProperty(d2fctx * _ctx, const int _prop_id);
 }
 
 #endif // FAPIUTIL_H_INCLUDED

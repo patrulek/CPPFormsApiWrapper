@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <functional>
 
+#include "Expected.h"
 #include "dllmain.h"
 #include "D2FOB.H"
 
@@ -77,7 +78,7 @@ namespace CPPFAPIWrapper {
 			* \param _fullname Full name of object (ex. for item object you could try to find "MY_BLOCK.MY_ITEM")
 			* \return Pointer to FormsObject if exists, otherwise throws exception.
 			*/
-			CPPFAPIWRAPPER FormsObject * getObject(const int _type_id, const std::string & _fullname) const;
+			CPPFAPIWRAPPER Expected<FormsObject> getObject(const int _type_id, const std::string & _fullname) const;
 
 			/** Gets objects which lies directly under root object in hierarchy
 			*
@@ -86,13 +87,6 @@ namespace CPPFAPIWrapper {
 			*/
 			CPPFAPIWRAPPER std::vector<FormsObject *> getObjects(const int _type_id) const;
 
-			/** Gets given object which lies directly under root object in hierarchy
-			*
-			* \param _type_id OracleForms object type id
-			* \param _name Name of object.
-			* \return Pointer to FormsObject
-			*/
-			CPPFAPIWRAPPER FormsObject * getRootObject(const int _type_id, const std::string & _name) const;
 			// Convenient functions
 			/** Gets all AttachedLibrary objects
 			*
